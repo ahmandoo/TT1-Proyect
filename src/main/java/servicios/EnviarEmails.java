@@ -4,7 +4,9 @@ import interfaces.InterfazEnviarEmails;
 import modelo.Destinatario;
 import org.springframework.stereotype.Service;
 import utilidades.api.EmailApi;
-
+/**
+ * Servicio encargado del envío de correos utilizando la configuración de EmailApi.
+ */
 @Service
 public class EnviarEmails implements InterfazEnviarEmails {
     private final EmailApi emailApi;
