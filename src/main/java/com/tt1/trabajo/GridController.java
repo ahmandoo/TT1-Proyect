@@ -22,17 +22,31 @@ import interfaces.InterfazContactoSim;
 import modelo.DatosSimulation;
 import modelo.DatosSolicitud;
 import modelo.Punto;
-
+/**
+ * Controlador encargado de gestionar y renderizar la vista de la cuadrícula (grid) 
+ * correspondiente a los resultados de una simulación.
+ */
 @Controller
 public class GridController {
 	private final InterfazContactoSim ics;
 	private final Logger logger;
-	
+	/**
+     * Constructor para inyectar las dependencias necesarias.
+     * * @param ics    Servicio de interfaz para comunicarse con el sistema de simulación.
+     * @param logger Componente para el registro de trazas y eventos.
+     */
 	public GridController(InterfazContactoSim ics, Logger logger) {
 		this.ics = ics;
 		this.logger = logger;
 	}
-	
+	/**
+     * Maneja la petición GET para visualizar la cuadrícula de simulación.
+     * Extrae los datos de la simulación usando el token proporcionado y prepara el mapa de colores.
+     * * @param tok     Token o identificador único de la simulación descargada.
+     * @param model   Modelo de Spring para pasar los atributos a la plantilla de Thymeleaf.
+     * @param session Sesión HTTP actual para verificar si el usuario ha iniciado sesión.
+     * @return El nombre de la vista HTML ("grid") o una redirección a la raíz si no hay sesión.
+     */
 	@GetMapping("/grid")
     public String solicitud(@RequestParam int tok, Model model, HttpSession session) {
 
