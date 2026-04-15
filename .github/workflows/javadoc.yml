@@ -23,8 +23,8 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Generate sources and Javadoc
-  	run: mvn generate-sources javadoc:javadoc
+      - name: Generate Javadoc
+        run: mvn generate-source javadoc:javadoc
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
