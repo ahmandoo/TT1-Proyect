@@ -24,7 +24,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Generate Javadoc
-        run: mvn generate-source javadoc:javadoc
+        run: mvn generate-sources javadoc:javadoc
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
