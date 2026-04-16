@@ -25,7 +25,10 @@ jobs:
 
       - name: Generate Javadoc
         run: mvn -e generate-sources javadoc:javadoc
-
+        
+      - name: List target directory
+        run: find target -type d
+  
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
