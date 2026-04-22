@@ -26,6 +26,7 @@ public class UsuarioRepositoryTest {
         assertNotNull(usuarioEncontrado.get().getId(), "JPA debería haber generado un ID autoincremental");
     }
 
+
     @Test
     public void testBuscarUsuarioNoExistente() {
         Optional<UsuarioEntity> usuarioEncontrado = usuarioRepository.findByUsername("usuarioFantasma");
