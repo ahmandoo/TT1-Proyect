@@ -42,10 +42,11 @@ public class ContactoSimUnitTest {
                 .thenReturn(mockResponse);
 
         DatosSolicitud sol = new DatosSolicitud(Map.of(1, 10));
-        int result = contactoSim.solicitarSimulation(sol);
+        int result = contactoSim.solicitarSimulation(sol, "usuarioTest");
 
         assertEquals(12345, result, "Debería devolver el token 12345");
     }
+
 
     @Test
     void testSolicitarSimulationConError() throws Exception {
@@ -53,7 +54,7 @@ public class ContactoSimUnitTest {
                 .thenThrow(new RuntimeException("Error de red simulado"));
 
         DatosSolicitud sol = new DatosSolicitud(Map.of(1, 10));
-        int result = contactoSim.solicitarSimulation(sol);
+        int result = contactoSim.solicitarSimulation(sol, "usuarioTest");
 
         assertEquals(-1, result, "Debería devolver -1 cuando hay una excepción");
     }

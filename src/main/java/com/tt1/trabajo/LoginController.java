@@ -1,5 +1,7 @@
 package com.tt1.trabajo;
 
+import com.tt1.trabajo.entity.UsuarioEntity;
+import com.tt1.trabajo.repository.UsuarioRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +12,13 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @Controller
 public class LoginController {
+    private final UsuarioRepository userRepository;
+
+    public LoginController(UsuarioRepository repo) {
+        this.userRepository = repo;
+    }
+
+
     /**
      * Muestra la página principal de inicio de sesión.
      * * @param session Sesión HTTP actual.
@@ -30,7 +39,15 @@ public class LoginController {
      */
     @PostMapping("/login")
     public String doLogin(@RequestParam String username, HttpSession session){
-        session.setAttribute("username", username);
+        UsuarioEntity usuario = userRepository.findByUsername(username).orElse(null);
+
+        if (usuario == null) {
+            usuario = new UsuarioEntity(username);
+            userRepository.save(usuario);
+        }
+
+        session.setAttribute("username", usuario.getUsername());
+
         return "redirect:/solicitud";
     }
     /**

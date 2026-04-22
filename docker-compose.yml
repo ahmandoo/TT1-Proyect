@@ -1,0 +1,15 @@
+services:
+  oracle:
+    image: gvenzl/oracle-xe:21-slim-faststart
+    container_name: oracle-db
+    ports:
+      - "1521:1521"
+    environment:
+      - ORACLE_PASSWORD=password123
+      - APP_USER=SIMU_USER
+      - APP_USER_PASSWORD=password123
+    volumes:
+      - oracle_data:/opt/oracle/oradata
+
+volumes:
+  oracle_data:
