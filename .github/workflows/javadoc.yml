@@ -1,15 +1,12 @@
 name: Generate Javadoc and Deploy to Pages
-
 on:
   push:
     branches:
       - stable
-
 permissions:
   contents: read
   pages: write
   id-token: write
-
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -24,11 +21,19 @@ jobs:
           distribution: 'temurin'
 
       - name: Generate Javadoc
-        run: mvn -e generate-sources javadoc:javadoc
-        
-      - name: List target directory
-        run: find target -type d
-  
+        run: mvn javadoc:javadoc
+
+      - name: Diagnóstico - buscar Javadoc
+        run: |
+          echo "=== Contenido de target/ ==="
+          find target -type d 2>/dev/null || echo "El directorio target/ no existe"
+
+      - name: Verificar Javadoc generado
+        run: |
+          ls target/reports/apidocs || \
+          ls target/site/apidocs || \
+          (echo "ERROR: Javadoc no encontrado en ninguna ruta conocida" && exit 1)
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
