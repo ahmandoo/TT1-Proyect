@@ -1,15 +1,12 @@
 name: Generate Javadoc and Deploy to Pages
-
 on:
   push:
     branches:
       - stable
-
 permissions:
   contents: read
   pages: write
   id-token: write
-
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -32,7 +29,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'target/reports/apidocs'
+          path: 'target/site/apidocs'
 
       - name: Deploy to GitHub Pages
         id: deployment
