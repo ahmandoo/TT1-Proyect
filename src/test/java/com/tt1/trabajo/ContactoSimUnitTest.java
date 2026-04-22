@@ -47,6 +47,7 @@ public class ContactoSimUnitTest {
         assertEquals(12345, result, "Debería devolver el token 12345");
     }
 
+
     @Test
     void testSolicitarSimulationConError() throws Exception {
         when(solicitudApiMock.solicitudSolicitarPost(anyString(), any()))
