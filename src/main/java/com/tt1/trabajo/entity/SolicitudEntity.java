@@ -17,6 +17,7 @@ public class SolicitudEntity {
     private String estado;
 
     public SolicitudEntity() {}
+
     public SolicitudEntity(Integer token, UsuarioEntity usuario, String estado) {
         this.token = token;
         this.usuario = usuario;
@@ -25,7 +26,35 @@ public class SolicitudEntity {
     }
 
     // Getters y Setters
-    public Integer getToken() { return token; }
-    public String getEstado() { return estado; }
-    public void setEstado(String estado) { this.estado = estado; }
+    public Integer getToken() {
+        return token;
+    }
+
+    public void setToken(Integer token) {
+        this.token = token;
+    }
+
+    public UsuarioEntity getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(UsuarioEntity usuario) {
+        this.usuario = usuario;
+    }
+
+    public LocalDateTime getFechaPeticion() {
+        return fechaPeticion;
+    }
+
+    public void setFechaPeticion(LocalDateTime fechaPeticion) {
+        this.fechaPeticion = fechaPeticion;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
 }
