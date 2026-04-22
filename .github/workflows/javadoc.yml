@@ -23,24 +23,13 @@ jobs:
       - name: Generate Javadoc
         run: mvn javadoc:javadoc
 
-      - name: Diagnóstico - buscar Javadoc
-        run: |
-          echo "=== Contenido de target/ ==="
-          find target -type d 2>/dev/null || echo "El directorio target/ no existe"
-
-      - name: Verificar Javadoc generado
-        run: |
-          ls target/reports/apidocs || \
-          ls target/site/apidocs || \
-          (echo "ERROR: Javadoc no encontrado en ninguna ruta conocida" && exit 1)
-
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'target/reports/apidocs'
+          path: 'target/site/apidocs'
 
       - name: Deploy to GitHub Pages
         id: deployment
