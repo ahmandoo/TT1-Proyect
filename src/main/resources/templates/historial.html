@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Mi Historial</title></head>
+<body>
+<h1>Mis Simulaciones</h1>
+<table border="1">
+    <thead>
+    <tr>
+        <th>Token</th>
+        <th>Fecha</th>
+        <th>Estado</th>
+        <th>Acción</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="sol : ${solicitudes}">
+        <td th:text="${sol.token}"></td>
+        <td th:text="${#temporals.format(sol.fechaPeticion, 'dd-MM-yyyy HH:mm')}"></td>
+        <td th:text="${sol.estado}"></td>
+        <td>
+            <a th:if="${sol.estado == 'COMPLETADO'}"
+               th:href="@{/grid(ticket=${sol.token})}">Ver Resultados</a>
+            <span th:unless="${sol.estado == 'COMPLETADO'}">En proceso...</span>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<nav><a th:href="@{/solicitud}">Nueva Solicitud</a> | <a th:href="@{/logout}">Salir</a></nav>
+</body>
+</html>
