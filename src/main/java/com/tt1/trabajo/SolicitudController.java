@@ -122,4 +122,13 @@ public class SolicitudController {
         return "formResult";
     }
 
+    @GetMapping("/historial")
+    public String mostrarHistorial(Model model, HttpSession session) {
+        String username = (String) session.getAttribute("username");
+        if (username == null) return "redirect:/";
+        List<SolicitudEntity> misSolicitudes = solicitudRepo.findByUsuarioUsername(username);
+        model.addAttribute("solicitudes", misSolicitudes);
+        return "historial";
+    }
+
 }
