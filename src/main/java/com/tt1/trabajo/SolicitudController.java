@@ -1,6 +1,9 @@
 package com.tt1.trabajo;
 
+import com.tt1.trabajo.entity.SolicitudEntity;
+import com.tt1.trabajo.entity.UsuarioEntity;
 import com.tt1.trabajo.repository.SolicitudRepository;
+import com.tt1.trabajo.repository.UsuarioRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,15 +30,20 @@ public class SolicitudController {
 	
 	private final InterfazContactoSim ics;
 	private final Logger logger;
+    private final UsuarioRepository usuarioRepo;
+    private final SolicitudRepository solicitudRepo;
 	/**
      * Constructor para inyectar dependencias.
      * * @param ics    Servicio para interactuar con la lógica de simulación y las entidades.
      * @param logger Logger para registrar eventos.
      */
-	public SolicitudController(InterfazContactoSim ics, Logger logger) {
-		this.ics = ics;
-		this.logger = logger;
-	}
+    public SolicitudController(InterfazContactoSim ics, Logger logger,
+                               UsuarioRepository usuarioRepo, SolicitudRepository solicitudRepo) {
+        this.ics = ics;
+        this.logger = logger;
+        this.usuarioRepo = usuarioRepo;
+        this.solicitudRepo = solicitudRepo;
+    }
 
     /**
      * Prepara y muestra el formulario de solicitud.
@@ -101,10 +109,13 @@ public class SolicitudController {
         	logger.info("Atendida petición");
         	DatosSolicitud ds = new DatosSolicitud(validData);
         	int tok = ics.solicitarSimulation(ds, username);
-
-        	if(tok != -1) {
-        		model.addAttribute("token", tok);
-        	} else {
+            if(tok != -1) {
+                UsuarioEntity user = usuarioRepo.findByUsername(username)
+                        .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                solicitudRepo.save(new SolicitudEntity(tok, user, "PENDIENTE"));
+                model.addAttribute("token", tok);
+            }
+            else {
         		logger.error("Error en comunicación con servidor de simulación");
         	}
         }
