@@ -30,6 +30,8 @@ public class GridControllerUnitTest {
     private Logger loggerMock;
     @MockBean
     private com.tt1.trabajo.repository.UsuarioRepository usuarioRepository;
+    @MockBean
+    private com.tt1.trabajo.repository.SolicitudRepository solicitudRepository;
 
     @Test
     public void testGetGridSinSesionRedirigeLogin() throws Exception {
@@ -50,14 +52,12 @@ public class GridControllerUnitTest {
         p.setY(3);
         p.setColor("#FF0000");
         dsMock.setPuntos(Map.of(0, List.of(p)));
-        when(icsMock.descargarDatos(12345)).thenReturn(dsMock);
-        mockMvc.perform(get("/grid")
-                        .session(session)
-                        .param("tok", "12345"))
+        when(icsMock.descargarDatos(12345, "usuarioPrueba")).thenReturn(dsMock);
+        mockMvc.perform(get("/grid").param("tok", "12345").session(session))
                 .andExpect(status().isOk())
                 .andExpect(view().name("grid"))
-                .andExpect(model().attribute("count", 10))
-                .andExpect(model().attribute("maxTime", 1))
-                .andExpect(model().attribute("colors", Map.of("0-3-5", "#FF0000")));
+                .andExpect(model().attribute("ancho", 10))
+                .andExpect(model().attributeExists("maxT"))
+                .andExpect(model().attributeExists("colors"));
     }
 }

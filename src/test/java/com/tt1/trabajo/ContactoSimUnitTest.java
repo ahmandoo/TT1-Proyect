@@ -64,9 +64,9 @@ public class ContactoSimUnitTest {
         ResultsResponse mockResponse = new ResultsResponse();
         String datosFicticios = "12\n0,5,5,red\n1,6,6,red";
         mockResponse.setData(datosFicticios);
-        when(resultadosApiMock.resultadosPost(anyString(), anyInt())).thenReturn(mockResponse);
+        when(resultadosApiMock.resultadosPost(eq("usuarioTest"), eq(123))).thenReturn(mockResponse);
 
-        DatosSimulation resultado = contactoSim.descargarDatos(123);
+        DatosSimulation resultado = contactoSim.descargarDatos(123, "usuarioTest");
 
         assertNotNull(resultado);
         assertEquals(12, resultado.getAnchoTablero());

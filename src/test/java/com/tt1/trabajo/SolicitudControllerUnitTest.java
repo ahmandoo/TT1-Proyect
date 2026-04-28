@@ -2,6 +2,7 @@ package com.tt1.trabajo;
 
 import interfaces.InterfazContactoSim;
 import modelo.Entidad;
+import com.tt1.trabajo.entity.UsuarioEntity;
 import com.tt1.trabajo.repository.UsuarioRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -29,6 +31,9 @@ public class SolicitudControllerUnitTest {
     private InterfazContactoSim icsMock;
     @MockBean
     private UsuarioRepository usuarioRepository;
+
+    @MockBean
+    private com.tt1.trabajo.repository.SolicitudRepository solicitudRepository;
 
     @Test
     public void testGetSolicitudRedirigeSiNoHaySesion() throws Exception {
@@ -57,9 +62,14 @@ public class SolicitudControllerUnitTest {
     public void testPostSolicitudConExito() throws Exception {
         MockHttpSession session = new MockHttpSession();
         session.setAttribute("username", "usuarioPrueba");
+        UsuarioEntity usuarioMock = new UsuarioEntity("usuarioPrueba");
+
+        when(usuarioRepository.findByUsername("usuarioPrueba"))
+                .thenReturn(Optional.of(usuarioMock));
 
         when(icsMock.isValidEntityId(1)).thenReturn(true);
         when(icsMock.solicitarSimulation(any(), eq("usuarioPrueba"))).thenReturn(999);
+
 
         mockMvc.perform(post("/solicitud")
                         .session(session)
