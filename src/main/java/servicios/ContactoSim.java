@@ -59,16 +59,15 @@ public class ContactoSim implements InterfazContactoSim {
     }
 
     @Override
-    public DatosSimulation descargarDatos(int ticket) {
+    public DatosSimulation descargarDatos(int ticket,String usuario) {
         DatosSimulation ds = new DatosSimulation();
         ds.setPuntos(new HashMap<>());
         ds.setAnchoTablero(10);
         ds.setMaxSegundos(0);
 
         try {
-            utilidades.model.ResultsResponse response = resultadosApi.resultadosPost("usuario", ticket);
+            utilidades.model.ResultsResponse response = resultadosApi.resultadosPost(usuario, ticket);
             Object dataObj = response.getData();
-
             if (dataObj instanceof String && !((String) dataObj).isEmpty()) {
                 String rawData = ((String) dataObj).replace("\r", "");
                 String[] lineas = rawData.trim().split("\n");

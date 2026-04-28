@@ -22,7 +22,7 @@ public interface InterfazContactoSim {
      * * @param ticket Token identificador de la solicitud previa.
      * @return Un objeto DatosSimulation con el estado, los tiempos y puntos del tablero.
      */
-	public DatosSimulation descargarDatos(int ticket);
+	public DatosSimulation descargarDatos(int ticket,String usuario);
 	/**
      * Obtiene la lista completa de entidades disponibles en el sistema.
      * * @return Lista de objetos Entidad monitorizables.
