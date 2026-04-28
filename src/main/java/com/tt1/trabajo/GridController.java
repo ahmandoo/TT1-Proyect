@@ -54,17 +54,14 @@ public class GridController {
 			return "redirect:/";
 		}
 		DatosSimulation ds = ics.descargarDatos(tok, username);
-		model.addAttribute("ancho", ds.getAnchoTablero());
-		model.addAttribute("maxT", ds.getMaxSegundos());
+		model.addAttribute("count", ds.getAnchoTablero());
+        model.addAttribute("maxTime", ds.getMaxSegundos());
 		Map<String, String> colors = new HashMap<>();
-		for(int t = 0; t < ds.getMaxSegundos(); t++) {
-			List<Punto> puntosEnT = ds.getPuntos().get(t);
-			if (puntosEnT != null) {
-				for(Punto p : puntosEnT) {
-					colors.put(t + "-" + p.getY() + "-" + p.getX(), p.getColor());
-				}
-			}
-		}
+		for(var t = 0; t < ds.getMaxSegundos(); t++) {
+        	for(Punto p : ds.getPuntos().get(t)) {
+        		colors.put(t+"-"+p.getY()+"-"+p.getX(), p.getColor());
+        	}
+        }
 		model.addAttribute("colors", colors);
 		return "grid";
 	}
