@@ -56,8 +56,8 @@ public class GridControllerUnitTest {
         mockMvc.perform(get("/grid").param("tok", "12345").session(session))
                 .andExpect(status().isOk())
                 .andExpect(view().name("grid"))
-                .andExpect(model().attribute("ancho", 10))
-                .andExpect(model().attributeExists("maxT"))
+                .andExpect(model().attribute("count", 10))
+                .andExpect(model().attributeExists("maxTime"))
                 .andExpect(model().attributeExists("colors"));
     }
 }
