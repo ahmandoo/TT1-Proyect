@@ -14,6 +14,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class LoginController {
     private final UsuarioRepository userRepository;
 
+    /**
+     * Constructor para la inyección del repositorio de usuarios.
+     * @param repo Repositorio encargado de la persistencia de entidades {@link UsuarioEntity}.
+     */
     public LoginController(UsuarioRepository repo) {
         this.userRepository = repo;
     }
@@ -32,10 +36,12 @@ public class LoginController {
         return "index";
     }
     /**
-     * Procesa el formulario de inicio de sesión y almacena al usuario en la sesión.
-     * * @param username Nombre de usuario introducido en el formulario.
-     * @param session  Sesión HTTP donde se guardará el usuario.
-     * @return Redirección a la ruta "/solicitud".
+     * Procesa la solicitud de inicio de sesión. 
+     * Si el nombre de usuario no existe en el sistema, se registra automáticamente 
+     * como un nuevo usuario en la base de datos antes de iniciar la sesión.
+     * * @param username Nombre de usuario capturado desde el formulario.
+     * @param session  Sesión HTTP donde se almacenará el atributo de identidad.
+     * @return Redirección a la vista de solicitudes ("/solicitud").
      */
     @PostMapping("/login")
     public String doLogin(@RequestParam String username, HttpSession session){
@@ -51,7 +57,7 @@ public class LoginController {
         return "redirect:/solicitud";
     }
     /**
-     * Cierra la sesión del usuario actual y elimina sus datos.
+     * Cierra la sesión del usuario actual. Los datos siguen manteniendose en la base de datos.
      * * @param session Sesión HTTP a invalidar.
      * @return Redirección a la ruta principal ("/") tras hacer logout.
      */
