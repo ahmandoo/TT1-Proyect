@@ -29,6 +29,7 @@ public class ContactoSim implements InterfazContactoSim {
     /**
      * {@inheritDoc}
      * Mapea internamente los modelos locales a los modelos generados por OpenAPI antes de hacer la petición HTTP.
+     * @return El token de la solicitud generado por el servidor, o -1 en caso de fallo.
      */
     @Override
     public int solicitarSimulation(DatosSolicitud sol, String usuario) {
@@ -58,6 +59,13 @@ public class ContactoSim implements InterfazContactoSim {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * Descarga la respuesta del servidor y parsea el campo de datos (String en formato CSV).
+     * La primera línea define el ancho del tablero, y las siguientes definen puntos en 
+     * formato: <code>tiempo, y, x, color</code>.
+     * @return Un objeto {@link DatosSimulation} poblado con los puntos y dimensiones.
+     */
     @Override
     public DatosSimulation descargarDatos(int ticket,String usuario) {
         DatosSimulation ds = new DatosSimulation();
@@ -109,6 +117,10 @@ public class ContactoSim implements InterfazContactoSim {
         return ds;
     }
 
+    /**
+     * Obtiene el listado de entidades monitorizables disponibles en el sistema.
+     * @return Lista de objetos {@link Entidad}.
+     */
     @Override
     public List<Entidad> getEntities() {
         List<Entidad> entidades = new ArrayList<>();
@@ -125,6 +137,11 @@ public class ContactoSim implements InterfazContactoSim {
         return entidades;
     }
 
+    /**
+     * Valida si un identificador de entidad corresponde a uno de los tipos permitidos.
+     * @param id Identificador a validar.
+     * @return {@code true} si el ID está entre 1 y 4, {@code false} en caso contrario.
+     */
     @Override
     public boolean isValidEntityId(int id) {
         return id >= 1 && id <= 4;
