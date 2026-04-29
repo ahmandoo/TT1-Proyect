@@ -33,9 +33,11 @@ public class SolicitudController {
     private final UsuarioRepository usuarioRepo;
     private final SolicitudRepository solicitudRepo;
 	/**
-     * Constructor para inyectar dependencias.
-     * * @param ics    Servicio para interactuar con la lógica de simulación y las entidades.
-     * @param logger Logger para registrar eventos.
+     * Constructor para inyectar dependencias de servicios y repositorios.
+     * @param ics           Servicio para interactuar con la lógica de simulación externa.
+     * @param logger        Componente para el registro de eventos y errores.
+     * @param usuarioRepo   Repositorio para la persistencia de usuarios.
+     * @param solicitudRepo Repositorio para la persistencia de solicitudes.
      */
     public SolicitudController(InterfazContactoSim ics, Logger logger,
                                UsuarioRepository usuarioRepo, SolicitudRepository solicitudRepo) {
@@ -49,7 +51,7 @@ public class SolicitudController {
      * Prepara y muestra el formulario de solicitud.
      * Verifica que el usuario tenga una sesión activa; de lo contrario, redirige al inicio.
      * Carga las entidades disponibles para la simulación mediante {@link InterfazContactoSim}.
-     * * @param model Objeto para añadir atributos a la vista.
+     *  @param model Objeto para añadir atributos a la vista.
      * @param session Sesión actual del usuario para validar autenticación.
      * @return String con el nombre de la plantilla HTML ("solicitud") o redirección.
      */
@@ -61,19 +63,20 @@ public class SolicitudController {
         model.addAttribute("entities", ics.getEntities());
         return "solicitud";
     }
-    /**
-     * Procesa el envío del formulario de solicitud.
-     * Realiza las siguientes validaciones:
-     * 1. Existencia de sesión de usuario.
-     * 2. Conversión de cantidades a enteros.
-     * 3. Comprobación de que las cantidades no sean negativas.
-     * 4. Validación de IDs de entidad existentes.
-     * * Si hay errores, los añade al modelo para mostrarlos en "formResult".
-     * Si los datos son válidos, inicia la simulación y genera un token.
-     * * @param formData Mapa con los datos del formulario (ID Entidad -> Cantidad).
-     * @param model Objeto para pasar errores o el token resultante a la vista.
-     * @param session Sesión para identificar al autor de la solicitud.
-     * @return La vista "formResult" con el resultado de la operación.
+	
+   /**
+     * Procesa el envío del formulario, valida los datos e inicia la simulación.
+     * <p>
+     * El proceso incluye:
+     * <ul>
+     * <li>Validación de sesión y formato numérico de los datos.</li>
+     * <li>Comprobación de IDs de entidad válidos mediante {@link InterfazContactoSim}.</li>
+     * <li>Persistencia de la solicitud con estado "PENDIENTE" si el servidor acepta la petición.</li>
+     * </ul>
+     * @param formData Mapa con los datos del formulario (ID de entidad y cantidad).
+     * @param model    Objeto para devolver errores o el token generado a la vista.
+     * @param session  Sesión para identificar al autor de la solicitud.
+     * @return La vista "formResult" con el resumen de la operación.
      */
     @PostMapping("/solicitud")
     public String handleSolicitud(@RequestParam Map<String, String> formData, Model model, HttpSession session) {
@@ -122,6 +125,12 @@ public class SolicitudController {
         return "formResult";
     }
 
+	/**
+     * Recupera y muestra el historial de simulaciones solicitadas por el usuario actual.
+     * @param model   Objeto para pasar la lista de {@link SolicitudEntity} a la vista.
+     * @param session Sesión actual para filtrar las solicitudes por nombre de usuario.
+     * @return El nombre de la plantilla "historial" o redirección a la raíz si no hay sesión.
+     */
     @GetMapping("/historial")
     public String mostrarHistorial(Model model, HttpSession session) {
         String username = (String) session.getAttribute("username");
