@@ -16,10 +16,11 @@
 		</style>
 	</head>
 	<body>
-		<div class="slider-container">
-		    <input type="range" id="mySlider" min="0" th:max="${maxTime}" value="50">
-		    <span id="sliderValue">0</span>
-		</div>
+	<div class="slider-container" style="margin-bottom: 15px;">
+		<input type="range" id="mySlider" min="0" th:max="${maxTime}" value="0">
+		<span id="sliderValue">0</span>
+		<button id="playBtn" style="margin-left: 15px; padding: 5px 15px; cursor: pointer; font-weight: bold;">▶ Play</button>
+	</div>
 		<div class="grid" id='gr'></div>
 		<script th:inline="javascript">
 			const count = [[${count}]];
@@ -46,6 +47,41 @@
 						var node = document.getElementById(y+'-'+x);
 						node.style.background = colors[slider.value+'-'+y+'-'+x]??'blue';
 					}
+				}
+			});
+
+			const playBtn = document.getElementById("playBtn");
+			let playInterval;
+			let isPlaying = false;
+
+			playBtn.addEventListener("click", function() {
+				if (isPlaying) {
+					clearInterval(playInterval);
+					playBtn.textContent = "▶ Play";
+					isPlaying = false;
+				} else {
+					playBtn.textContent = "⏸ Pause";
+					isPlaying = true;
+
+					if (parseInt(slider.value) >= parseInt(slider.max)) {
+						slider.value = 0;
+						slider.dispatchEvent(new Event('input'));
+					}
+
+					playInterval = setInterval(function() {
+						let currentValue = parseInt(slider.value);
+						let maxValue = parseInt(slider.max);
+
+						if (currentValue < maxValue) {
+							slider.value = currentValue + 1;
+
+							slider.dispatchEvent(new Event('input'));
+						} else {
+							clearInterval(playInterval);
+							playBtn.textContent = "▶ Play";
+							isPlaying = false;
+						}
+					}, 1000);
 				}
 			});
 		</script>

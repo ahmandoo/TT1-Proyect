@@ -8,20 +8,17 @@ import interfaces.InterfazContactoSim;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-
-import interfaces.InterfazContactoSim;
 import modelo.DatosSimulation;
-import modelo.DatosSolicitud;
-import modelo.Punto;
+
+// Nuevos imports para la lógica del juego
+import servicios.GameService;
+
 /**
  * Controlador encargado de gestionar y renderizar la vista de la cuadrícula (grid) 
  * correspondiente a los resultados de una simulación.
@@ -30,15 +27,21 @@ import modelo.Punto;
 public class GridController {
 	private final InterfazContactoSim ics;
 	private final Logger logger;
+
+	private final GameService gameService;
+
 	/**
      * Constructor para inyectar las dependencias necesarias.
      * * @param ics    Servicio de interfaz para comunicarse con el sistema de simulación.
      * @param logger Componente para el registro de trazas y eventos.
      */
-	public GridController(InterfazContactoSim ics, Logger logger) {
+
+	public GridController(InterfazContactoSim ics, Logger logger, GameService gameService) {
 		this.ics = ics;
 		this.logger = logger;
+		this.gameService = gameService;
 	}
+
 	/**
      * Maneja la petición GET para visualizar la cuadrícula de simulación.
      * Extrae los datos de la simulación usando el token proporcionado y prepara el mapa de colores.
@@ -54,15 +57,48 @@ public class GridController {
 			return "redirect:/";
 		}
 		DatosSimulation ds = ics.descargarDatos(tok, username);
-		model.addAttribute("count", ds.getAnchoTablero());
-        model.addAttribute("maxTime", ds.getMaxSegundos());
+
+		int ancho = ds.getAnchoTablero();
+		int maxSegundos = ds.getMaxSegundos();
+
+		model.addAttribute("count", ancho);
+		model.addAttribute("maxTime", maxSegundos);
+
+		// Nueva lógica implementada:
+
+		// Inicializamos un nuevo grid vacío
+		int[][] gridLimpio = new int[ancho][ancho];
+		for(int i = 0; i < ancho; i++) {
+			for(int j = 0; j < ancho; j++) {
+				gridLimpio[i][j] = 1;
+			}
+		}
+
+		// Procesamos la simulación completa del juego (historial de generaciones)
+
+		List<int[][]> historialJuego = gameService.procesarSimulacionCompleta(gridLimpio, maxSegundos);
+		// Mapeamos las matrices al formato HashMap que necesita la vista HTML
 		Map<String, String> colors = new HashMap<>();
-		for(var t = 0; t < ds.getMaxSegundos(); t++) {
-        	for(Punto p : ds.getPuntos().get(t)) {
-        		colors.put(t+"-"+p.getY()+"-"+p.getX(), p.getColor());
-        	}
-        }
+
+		for(int t = 0; t < historialJuego.size(); t++) {
+			int[][] gridActual = historialJuego.get(t);
+
+			for(int y = 0; y < ancho; y++) {
+				for(int x = 0; x < ancho; x++) {
+					int estado = gridActual[y][x];
+					String colorHex = "";
+
+					if (estado == 1) colorHex = "blue";
+					else if (estado == 0) colorHex = "red";
+					else if (estado == 2) colorHex = "green";
+
+					colors.put(t + "-" + y + "-" + x, colorHex);
+				}
+			}
+		}
+
 		model.addAttribute("colors", colors);
+
 		return "grid";
 	}
 }
