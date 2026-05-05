@@ -6,18 +6,24 @@
 <body>
 <h1>Redactar Nuevo Correo</h1>
 <nav>
-    <a th:href="@{/correos/recibidos}">Bandeja de Entrada</a> |
-    <a th:href="@{/correos/enviados}">Correos Enviados</a>
+    <a th:href="@{/solicitud}">Volver a Bandeja de Entrada</a> |
+    <a th:href="@{/correos/enviados}">Ver Historial de Correos Enviados</a> |
+    <a th:href="@{/logout}">Cerrar Sesión</a>
 </nav>
 <br>
 <form th:action="@{/correos/enviar}" method="post">
+
+    <div th:if="${error}" style="color: red; margin-bottom: 15px;">
+        <strong th:text="${error}"></strong>
+    </div>
+
     <label for="destino">Destinatario (Usuario de Destino):</label><br>
     <input type="text" id="destino" name="destino" required />
     <br><br>
     <label for="mensaje">Mensaje:</label><br>
     <textarea id="mensaje" name="mensaje" rows="6" cols="50" required></textarea>
     <br><br>
-    <button type="submit">Enviar Correo</button>
+    <button type="submit">Enviar Correo e Iniciar Simulación</button>
 </form>
 </body>
 </html>

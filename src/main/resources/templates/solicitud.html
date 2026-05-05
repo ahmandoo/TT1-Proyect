@@ -1,25 +1,36 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Welcome</title>
+	<title>Bandeja de Entrada</title>
 </head>
-	<body>
-    	<form th:action="@{/solicitud}" method="post">
-			<div th:each="entity : ${entities}">
-			        <div>
-			            <label th:for="${entity.id}" th:text="'Num. de' + ${entity.name} + ':'"></label>
-			            <input type="number" min="0" th:id="${entity.id}" th:name="${entity.id}" />
-			        </div>
-			</div>
-			<button type="submit">Solicitar</button>
-			<nav>
-				<a th:href="@{/logout}">Cerrar Sesión</a>
-			</nav>
-			<nav>
-				<a th:href="@{/historial}">Ver Mi Historial de Simulaciones</a> |
-				<a th:href="@{/correos/recibidos}">Bandeja de Entrada (Mensajes)</a> |
-				<a th:href="@{/logout}">Cerrar Sesión</a>
-			</nav>
-		</form>
-	</body>
+<body>
+<h1>Bandeja de Entrada de: <span th:text="${usuarioActual}" style="color: blue;"></span></h1>
+
+<nav>
+	<a th:href="@{/correos/enviados}">Ver el historial de correos enviados</a> |
+	<a th:href="@{/correos/nuevo}">Redactar un nuevo correo</a> |
+	<a th:href="@{/logout}">Cerrar Sesión</a>
+</nav>
+<br>
+
+<h2>Correos Recibidos</h2>
+<table border="1">
+	<thead>
+	<tr>
+		<th>Token (Simulación oculta)</th>
+		<th>Remitente</th>
+		<th>Fecha</th>
+		<th>Mensaje</th>
+	</tr>
+	</thead>
+	<tbody>
+	<tr th:each="correo : ${correos}">
+		<td th:text="${correo.token}"></td>
+		<td th:text="${correo.origen}"></td>
+		<td th:text="${#temporals.format(correo.fecha, 'dd-MM-yyyy HH:mm')}"></td>
+		<td th:text="${correo.mensaje}"></td>
+	</tr>
+	</tbody>
+</table>
+</body>
 </html>

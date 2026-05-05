@@ -1,30 +1,33 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><title>Mi Historial</title></head>
+<head>
+    <title>Bandeja de Entrada</title>
+</head>
 <body>
-<h1>Mis Simulaciones</h1>
+<h1>Bandeja de Entrada (Recibidos)</h1>
+<nav>
+    <a th:href="@{/correos/nuevo}">Redactar Nuevo Correo</a> |
+    <a th:href="@{/correos/enviados}">Ver Historial de Correos Enviados</a> |
+    <a th:href="@{/logout}">Cerrar Sesión</a>
+</nav>
+<br>
 <table border="1">
     <thead>
     <tr>
-        <th>Token</th>
+        <th>Token (Simulación)</th>
+        <th>Remitente</th>
         <th>Fecha</th>
-        <th>Estado</th>
-        <th>Acción</th>
+        <th>Mensaje</th>
     </tr>
     </thead>
     <tbody>
-    <tr th:each="sol : ${solicitudes}">
-        <td th:text="${sol.token}"></td>
-        <td th:text="${#temporals.format(sol.fechaPeticion, 'dd-MM-yyyy HH:mm')}"></td>
-        <td th:text="${sol.estado}"></td>
-        <td>
-            <a th:if="${sol.estado == 'COMPLETADO'}"
-               th:href="@{/grid(ticket=${sol.token})}">Ver Resultados</a>
-            <span th:unless="${sol.estado == 'COMPLETADO'}">En proceso...</span>
-        </td>
+    <tr th:each="correo : ${correos}">
+        <td th:text="${correo.token}"></td>
+        <td th:text="${correo.origen}"></td>
+        <td th:text="${#temporals.format(correo.fecha, 'dd-MM-yyyy HH:mm')}"></td>
+        <td th:text="${correo.mensaje}"></td>
     </tr>
     </tbody>
 </table>
-<nav><a th:href="@{/solicitud}">Nueva Solicitud</a> | <a th:href="@{/logout}">Salir</a></nav>
 </body>
 </html>

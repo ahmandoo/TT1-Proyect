@@ -7,6 +7,7 @@ import java.util.Optional;
  * Permite realizar búsquedas y operaciones sobre los usuarios registrados.
  */
 public interface UsuarioRepository extends JpaRepository<UsuarioEntity, Long> {
+    boolean existsByUsername(String username);
     /**
      * Busca un usuario por su nombre de identificación único.
      * @param username El nombre de usuario a buscar.

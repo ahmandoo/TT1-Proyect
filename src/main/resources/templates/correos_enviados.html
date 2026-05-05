@@ -6,15 +6,15 @@
 <body>
 <h1>Historial de Correos Enviados</h1>
 <nav>
+    <a th:href="@{/solicitud}">Volver a Bandeja de Entrada</a> |
     <a th:href="@{/correos/nuevo}">Redactar Nuevo Correo</a> |
-    <a th:href="@{/correos/recibidos}">Ver Bandeja de Entrada</a> |
-    <a th:href="@{/solicitud}">Volver al Inicio</a>
+    <a th:href="@{/logout}">Cerrar Sesión</a>
 </nav>
 <br>
 <table border="1">
     <thead>
     <tr>
-        <th>Token</th>
+        <th>Token (Simulación)</th>
         <th>Destinatario</th>
         <th>Fecha</th>
         <th>Mensaje</th>

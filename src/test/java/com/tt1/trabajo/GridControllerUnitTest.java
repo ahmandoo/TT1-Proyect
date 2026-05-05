@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
+import com.tt1.trabajo.repository.CorreoRepository;
 
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,8 @@ public class GridControllerUnitTest {
 
     @Autowired
     private MockMvc mockMvc;
+    @MockBean
+    private CorreoRepository correoRepository;
 
     @MockBean
     private InterfazContactoSim icsMock;
