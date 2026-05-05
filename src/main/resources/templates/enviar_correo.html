@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Redactar Correo</title>
+</head>
+<body>
+<h1>Redactar Nuevo Correo</h1>
+<nav>
+    <a th:href="@{/correos/recibidos}">Bandeja de Entrada</a> |
+    <a th:href="@{/correos/enviados}">Correos Enviados</a>
+</nav>
+<br>
+<form th:action="@{/correos/enviar}" method="post">
+    <label for="destino">Destinatario (Usuario de Destino):</label><br>
+    <input type="text" id="destino" name="destino" required />
+    <br><br>
+    <label for="mensaje">Mensaje:</label><br>
+    <textarea id="mensaje" name="mensaje" rows="6" cols="50" required></textarea>
+    <br><br>
+    <button type="submit">Enviar Correo</button>
+</form>
+</body>
+</html>

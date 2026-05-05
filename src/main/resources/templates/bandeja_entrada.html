@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Bandeja de Entrada</title>
+</head>
+<body>
+<h1>Bandeja de Entrada</h1>
+<nav>
+    <a th:href="@{/correos/nuevo}">Redactar Nuevo Correo</a> |
+    <a th:href="@{/correos/enviados}">Ver Correos Enviados</a> |
+    <a th:href="@{/solicitud}">Volver al Inicio</a>
+</nav>
+<br>
+<table border="1">
+    <thead>
+    <tr>
+        <th>Token</th>
+        <th>Remitente</th>
+        <th>Fecha</th>
+        <th>Mensaje</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="correo : ${correos}">
+        <td th:text="${correo.token}"></td>
+        <td th:text="${correo.origen}"></td>
+        <td th:text="${#temporals.format(correo.fecha, 'dd-MM-yyyy HH:mm')}"></td>
+        <td th:text="${correo.mensaje}"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
