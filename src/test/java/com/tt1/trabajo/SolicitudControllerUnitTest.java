@@ -1,5 +1,6 @@
 package com.tt1.trabajo;
 
+import com.tt1.trabajo.entity.SolicitudEntity;
 import interfaces.InterfazContactoSim;
 import modelo.Entidad;
 import com.tt1.trabajo.entity.UsuarioEntity;
@@ -81,5 +82,19 @@ public class SolicitudControllerUnitTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("formResult"))
                 .andExpect(model().attribute("token", 999));
+    }
+
+    @Test
+    public void testGetHistorialConSesion() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("username", "usuarioPrueba");
+
+        List<SolicitudEntity> listaMocks = List.of(new SolicitudEntity());
+        when(solicitudRepository.findByUsuarioUsername("usuarioPrueba")).thenReturn(listaMocks);
+
+        mockMvc.perform(get("/historial").session(session))
+                .andExpect(status().isOk())
+                .andExpect(view().name("historial"))
+                .andExpect(model().attributeExists("solicitudes"));
     }
 }

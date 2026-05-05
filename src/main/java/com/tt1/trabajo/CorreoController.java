@@ -1,4 +1,4 @@
-package com.tt1.trabajo.controller;
+package com.tt1.trabajo;
 
 import com.tt1.trabajo.entity.CorreoEntity;
 import com.tt1.trabajo.repository.CorreoRepository;
@@ -31,7 +31,7 @@ public class CorreoController {
     @Autowired
     private InterfazContactoSim ics;
 
-    @GetMapping("/solicitud")
+    @GetMapping("/correos/bandeja")
     public String verBandejaEntrada(HttpSession session, Model model) {
         String username = (String) session.getAttribute("username");
         if (username == null) return "redirect:/";

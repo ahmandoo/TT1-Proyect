@@ -55,7 +55,7 @@ public class SolicitudController {
      * @param session Sesión actual del usuario para validar autenticación.
      * @return String con el nombre de la plantilla HTML ("solicitud") o redirección.
      */
-    /*
+
     @GetMapping("/solicitud")
     public String solicitud(Model model, HttpSession session) {
         if (session.getAttribute("username") == null) {
@@ -63,7 +63,7 @@ public class SolicitudController {
         }
         model.addAttribute("entities", ics.getEntities());
         return "solicitud";
-    }*/
+    }
 	
    /**
      * Procesa el envío del formulario, valida los datos e inicia la simulación.
