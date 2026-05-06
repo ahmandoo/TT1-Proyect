@@ -19,6 +19,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Controlador de Spring MVC encargado de gestionar el flujo de correos.
+ * Permite a los usuarios ver su bandeja de entrada, correos enviados y enviar nuevos mensajes.
+ */
 @Controller
 public class CorreoController {
 
@@ -31,6 +35,13 @@ public class CorreoController {
     @Autowired
     private InterfazContactoSim ics;
 
+    /**
+     * Muestra la bandeja de entrada del usuario con los correos recibidos ordenados por fecha.
+     *
+     * @param session Sesión HTTP actual para verificar si el usuario está autenticado.
+     * @param model   Modelo de Spring para pasar la lista de correos a la vista.
+     * @return El nombre de la vista HTML de la bandeja de entrada, o redirección al inicio si no hay sesión.
+     */
     @GetMapping("/correos/bandeja")
     public String verBandejaEntrada(HttpSession session, Model model) {
         String username = (String) session.getAttribute("username");
@@ -42,6 +53,13 @@ public class CorreoController {
         return "solicitud";
     }
 
+    /**
+     * Muestra la vista con el historial de correos enviados por el usuario actual.
+     *
+     * @param session Sesión HTTP actual para obtener el usuario autenticado.
+     * @param model   Modelo de Spring para pasar la lista de correos enviados a la vista.
+     * @return El nombre de la vista HTML "correos_enviados", o redirección al inicio si no hay sesión.
+     */
     @GetMapping("/correos/enviados")
     public String verEnviados(HttpSession session, Model model) {
         String username = (String) session.getAttribute("username");
@@ -53,6 +71,13 @@ public class CorreoController {
         return "correos_enviados";
     }
 
+    /**
+     * Muestra el formulario para redactar un nuevo correo.
+     *
+     * @param session Sesión HTTP actual.
+     * @param model   Modelo de Spring para pasar el nombre del usuario actual a la vista.
+     * @return El nombre de la vista HTML "enviar_correo", o redirección al inicio si no hay sesión.
+     */
     @GetMapping("/correos/nuevo")
     public String redactarCorreo(HttpSession session, Model model) {
         String username = (String) session.getAttribute("username");
@@ -62,6 +87,16 @@ public class CorreoController {
         return "enviar_correo";
     }
 
+    /**
+     * Procesa el envío de un nuevo correo desde el formulario.
+     * Verifica que el destinatario exista, solicita una nueva simulación asociada y guarda el correo.
+     *
+     * @param destino Nombre del usuario que recibirá el correo.
+     * @param mensaje Contenido del mensaje a enviar.
+     * @param session Sesión HTTP para identificar al remitente.
+     * @param model   Modelo de Spring para devolver mensajes de error si el destinatario no existe.
+     * @return Redirección a la vista de correos enviados si tiene éxito, o recarga el formulario en caso de error.
+     */
     @PostMapping("/correos/enviar")
     public String procesarEnvio(@RequestParam String destino, @RequestParam String mensaje, HttpSession session, Model model) {
         String origen = (String) session.getAttribute("username");

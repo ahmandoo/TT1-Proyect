@@ -3,6 +3,10 @@ package com.tt1.trabajo.entity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+/**
+ * Entidad que representa un correo enviado o recibido en el sistema.
+ * Mapeada a la tabla "CORREOS" en la base de datos.
+ */
 @Entity
 @Table(name = "CORREOS")
 public class CorreoEntity {
@@ -28,8 +32,20 @@ public class CorreoEntity {
     @Column(nullable = false)
     private String mensaje;
 
+    /**
+     * Constructor por defecto requerido por JPA.
+     */
     public CorreoEntity() {}
 
+    /**
+     * Constructor con todos los campos necesarios para crear un nuevo correo.
+     *
+     * @param token   Identificador de la simulación asociada.
+     * @param origen  Nombre del usuario que envía el correo.
+     * @param destino Nombre del usuario que recibe el correo.
+     * @param fecha   Fecha y hora de envío.
+     * @param mensaje Contenido del correo.
+     */
     public CorreoEntity(String token, String origen, String destino, LocalDateTime fecha, String mensaje) {
         this.token = token;
         this.origen = origen;
