@@ -27,7 +27,9 @@ public class CorreoRepositoryTest {
     @BeforeEach
     void setUp() {
         UsuarioEntity user1 = new UsuarioEntity("usuarioA");
+        user1.setEmail("usuarioA@gmail.com");
         UsuarioEntity user2 = new UsuarioEntity("usuarioB");
+        user2.setEmail("usuarioB@gmail.com");
         usuarioRepository.save(user1);
         usuarioRepository.save(user2);
 
