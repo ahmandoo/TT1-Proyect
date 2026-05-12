@@ -1,5 +1,6 @@
 package com.tt1.trabajo;
 
+import com.tt1.trabajo.controller.CorreoController;
 import com.tt1.trabajo.repository.CorreoRepository;
 import com.tt1.trabajo.repository.UsuarioRepository;
 import interfaces.InterfazContactoSim;

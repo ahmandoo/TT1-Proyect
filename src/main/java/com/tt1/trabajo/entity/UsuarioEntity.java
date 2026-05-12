@@ -24,6 +24,9 @@ public class UsuarioEntity {
     @Column(unique = true, nullable = false)
     private String username;
 
+    @Column(nullable = false)
+    private String email;
+
     /**
      * Lista de solicitudes asociadas a este usuario.
      * Se gestiona en cascada para reflejar cambios en las solicitudes vinculadas.
@@ -40,9 +43,14 @@ public class UsuarioEntity {
      * Constructor para inicializar un usuario por su nombre.
      * @param username Nombre único del usuario.
      */
-    public UsuarioEntity(String username) { this.username = username; }
+    public UsuarioEntity(String username) {
+        this.username = username;
+    }
 
     public Long getId() { return id; }
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 }
+

@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-  <title>Gestor de Simulaciones UR - Inicio</title>
-</head>
-<body>
-<h1>Bienvenido al portal de gestión de simulaciones</h1>
-<p>Por favor, identifícate para gestionar tus simulaciones.</p>
+  <head>
+    <title>Gestor de Simulaciones UR - Inicio</title>
+  </head>
+  <body>
+    <h1>Bienvenido al portal de gestión de simulaciones</h1>
+    <p>Por favor, identifícate para gestionar tus simulaciones.</p>
 
-<form th:action="@{/login}" method="post">
-  <label for="username">Nombre de Usuario:</label>
-  <input type="text" id="username" name="username" required>
-  <button type="submit">Entrar</button>
-</form>
-</body>
+    <form th:action="@{/login}" method="post">
+      <label for="username">Nombre de Usuario:</label>
+      <input type="text" id="username" name="username" required>
+      <button type="submit">Entrar</button>
+    </form>
+    <p th:if="${error}" style="color: red;" th:text="${error}"></p>
+    <p>¿No tienes cuenta? <a th:href="@{/registro}">Regístrate aquí</a></p>
+  </body>
 </html>

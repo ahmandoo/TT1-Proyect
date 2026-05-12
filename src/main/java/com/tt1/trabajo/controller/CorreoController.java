@@ -1,4 +1,4 @@
-package com.tt1.trabajo;
+package com.tt1.trabajo.controller;
 
 import com.tt1.trabajo.entity.CorreoEntity;
 import com.tt1.trabajo.repository.CorreoRepository;
@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Controlador de Spring MVC encargado de gestionar el flujo de correos.

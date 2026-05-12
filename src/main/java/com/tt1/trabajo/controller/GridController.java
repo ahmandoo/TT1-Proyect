@@ -1,4 +1,4 @@
-package com.tt1.trabajo;
+package com.tt1.trabajo.controller;
 
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;

@@ -1,5 +1,6 @@
 package com.tt1.trabajo;
 
+import com.tt1.trabajo.controller.GridController;
 import interfaces.InterfazContactoSim;
 import modelo.DatosSimulation;
 import modelo.Punto;

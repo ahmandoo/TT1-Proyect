@@ -1,5 +1,6 @@
 package com.tt1.trabajo;
 
+import com.tt1.trabajo.controller.SolicitudController;
 import com.tt1.trabajo.entity.SolicitudEntity;
 import interfaces.InterfazContactoSim;
 import modelo.Entidad;

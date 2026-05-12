@@ -1,9 +1,10 @@
-package com.tt1.trabajo;
+package com.tt1.trabajo.controller;
 
 import com.tt1.trabajo.entity.UsuarioEntity;
 import com.tt1.trabajo.repository.UsuarioRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -44,12 +45,12 @@ public class LoginController {
      * @return Redirección a la vista de solicitudes ("/solicitud").
      */
     @PostMapping("/login")
-    public String doLogin(@RequestParam String username, HttpSession session){
+    public String doLogin(@RequestParam String username, HttpSession session, Model model){
         UsuarioEntity usuario = userRepository.findByUsername(username).orElse(null);
 
         if (usuario == null) {
-            usuario = new UsuarioEntity(username);
-            userRepository.save(usuario);
+            model.addAttribute("error", "El usuario no está registrado. Por favor, regístrese primero.");
+            return "index";
         }
 
         session.setAttribute("username", usuario.getUsername());

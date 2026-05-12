@@ -1,4 +1,4 @@
-package com.tt1.trabajo;
+package com.tt1.trabajo.controller;
 
 import com.tt1.trabajo.entity.SolicitudEntity;
 import com.tt1.trabajo.entity.UsuarioEntity;
