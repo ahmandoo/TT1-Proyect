@@ -23,14 +23,16 @@ public class GameService {
      * @param grid Matriz bidimensional vacía (o con celdas sanas).
      * @return La matriz modificada con las entidades iniciales plantadas.
      */
+
     private int[][] plantarEntidadesIniciales(int[][] grid) {
-        // Generación inicial que contiene 4 hospitales y 5 pacientes (casillas infectadas)
-        for(int i = 0; i < 4; i++) {
-            grid[(int)(Math.random() * grid.length)][(int)(Math.random() * grid[0].length)] = 2;
-        }
         for(int i = 0; i < 5; i++) {
             grid[(int)(Math.random() * grid.length)][(int)(Math.random() * grid[0].length)] = 0;
         }
+
+        for(int i = 0; i < 4; i++) {
+            grid[(int)(Math.random() * grid.length)][(int)(Math.random() * grid[0].length)] = 3;
+        }
+
         return grid;
     }
 
@@ -70,35 +72,43 @@ public class GameService {
 
         for (int i = 0; i < filas; i++) {
             for (int j = 0; j < columnas; j++) {
-                int estadoActual = gridActual[i][j];
-                boolean curaCerca = comprobarVecinos(gridActual, i, j, 2);
+                int estado = gridActual[i][j];
+                int infectadosCerca = contarVecinos(gridActual, i, j, 0); // Contamos los rojos alrededor
 
-                if (estadoActual == 1) {
-                    // Lógica para una célula sana
-                    int zombisCerca = contarVecinos(gridActual, i, j, 0);
-                    int sanosCerca = contarVecinos(gridActual, i, j, 1);
-
-                    if (zombisCerca > 0) {
-                        // Inmunidad de manada: si está rodeado de 3 o 4 sanos, la infección cae al 5%
-                        double probabilidadInfeccion = (sanosCerca >= 3) ? 0.05 : 0.30;
-                        gridFuturo[i][j] = (Math.random() < probabilidadInfeccion) ? 0 : 1;
+                if (estado == 1) {
+                    // Lógica de una célula sana (valor 1)
+                    if (infectadosCerca > 0) {
+                        // Riesgo de contagio normal (ej. 30%)
+                        gridFuturo[i][j] = (Math.random() < 0.30) ? 0 : 1;
                     } else {
-                        gridFuturo[i][j] = 1; // Sigue sano
+                        // Cada turno un sano tiene un 4% de vacunarse espontáneamente
+                        gridFuturo[i][j] = (Math.random() < 0.04) ? 3 : 1;
                     }
-                } else if (estadoActual == 0) {
-                    // Lógica para una celula infectada
-                    int sanosCerca = contarVecinos(gridActual, i, j, 1);
 
-                    if (curaCerca) {
-                        gridFuturo[i][j] = 1;
-                    } else if (sanosCerca == 0) {
-                        // Si no tiene sanos cerca, 25% de probabilidad de morir de inanición
-                        gridFuturo[i][j] = (Math.random() < 0.25) ? 1 : 0;
+                } else if (estado == 0) {
+                    // Lógica de una célula infectada (valor 0)
+                    double dado = Math.random();
+                    if (dado < 0.10) {
+                        gridFuturo[i][j] = 2; // 10% de probabilidad de Morir
+                    } else if (dado < 0.30) {
+                        gridFuturo[i][j] = 4; // 20% de probabilidad de Recuperarse (Anticuerpos)
                     } else {
                         gridFuturo[i][j] = 0; // Sigue infectado
                     }
+
+                } else if (estado == 4) {
+                    // Lógica de una célula recuperada con anticuerpos (valor 4)
+                    if (infectadosCerca > 0) {
+                        // Se puede reinfectar, pero es mucho más difícil (5% de reinfectarse)
+                        gridFuturo[i][j] = (Math.random() < 0.05) ? 0 : 4;
+                    } else {
+                        gridFuturo[i][j] = 4; // Sigue con anticuerpos
+                    }
+
                 } else {
-                    gridFuturo[i][j] = estadoActual;
+                    // Lógica de celulas muertas/infectadas (valores 2, 3)
+                    // Son estados inmutables, se quedan exactamente igual
+                    gridFuturo[i][j] = estado;
                 }
             }
         }

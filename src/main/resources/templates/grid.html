@@ -16,6 +16,14 @@
 		</style>
 	</head>
 	<body>
+	<div style="margin-bottom: 20px; font-family: sans-serif;">
+		<strong>Leyenda:</strong>
+		<span style="display:inline-block; width:15px; height:15px; background:blue; margin-left:10px;"></span> Sanos (Vulnerables)
+		<span style="display:inline-block; width:15px; height:15px; background:red; margin-left:10px;"></span> Infectados
+		<span style="display:inline-block; width:15px; height:15px; background:black; margin-left:10px;"></span> Fallecidos
+		<span style="display:inline-block; width:15px; height:15px; background:green; margin-left:10px;"></span> Vacunados (Inmunes)
+		<span style="display:inline-block; width:15px; height:15px; background:yellow; margin-left:10px;"></span> Recuperados
+	</div>
 	<div class="slider-container" style="margin-bottom: 15px;">
 		<input type="range" id="mySlider" min="0" th:max="${maxTime}" value="0">
 		<span id="sliderValue">0</span>

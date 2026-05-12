@@ -88,9 +88,11 @@ public class GridController {
 					int estado = gridActual[y][x];
 					String colorHex = "";
 
-					if (estado == 1) colorHex = "blue";
-					else if (estado == 0) colorHex = "red";
-					else if (estado == 2) colorHex = "green";
+					if (estado == 1) colorHex = "blue";          // Sanos (Vulnerables)
+					else if (estado == 0) colorHex = "red";      // Infectados
+					else if (estado == 2) colorHex = "black";    // Muertos (Inertes)
+					else if (estado == 3) colorHex = "green";    // Vacunados (Inmunes)
+					else if (estado == 4) colorHex = "yellow";   // Recuperados (Anticuerpos)
 
 					colors.put(t + "-" + y + "-" + x, colorHex);
 				}
