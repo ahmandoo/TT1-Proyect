@@ -23,7 +23,19 @@ public class RegistroControllerUnitTest {
 
     @MockBean
     private UsuarioRepository usuarioRepository;
-
+	
+	@MockBean
+    private CorreoRepository correoRepository;
+	
+    @MockBean
+    private InterfazContactoSim icsMock;
+	
+    @MockBean
+    private org.slf4j.Logger logger;
+	
+    @MockBean
+    private com.tt1.trabajo.repository.SolicitudRepository solicitudRepository;
+	
     @Test
     public void testShowRegistro() throws Exception {
         mockMvc.perform(get("/registro"))
