@@ -51,7 +51,6 @@ public class GameService {
 
         for (int i = 0; i < generaciones; i++) {
             gridActual = calcularSiguienteGeneracion(gridActual);
-            moverHospitales(gridActual);
             historial.add(gridActual);
         }
 
@@ -78,11 +77,11 @@ public class GameService {
                 if (estado == 1) {
                     // Lógica de una célula sana (valor 1)
                     if (infectadosCerca > 0) {
-                        // Riesgo de contagio normal (ej. 30%)
-                        gridFuturo[i][j] = (Math.random() < 0.30) ? 0 : 1;
+                        // Riesgo de contagio normal (ej. 40%)
+                        gridFuturo[i][j] = (Math.random() < 0.40) ? 0 : 1;
                     } else {
-                        // Cada turno un sano tiene un 4% de vacunarse espontáneamente
-                        gridFuturo[i][j] = (Math.random() < 0.04) ? 3 : 1;
+                        // Cada turno un sano tiene un 2% de vacunarse espontáneamente
+                        gridFuturo[i][j] = (Math.random() < 0.02) ? 3 : 1;
                     }
 
                 } else if (estado == 0) {
