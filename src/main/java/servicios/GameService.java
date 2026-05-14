@@ -7,7 +7,8 @@ import java.util.List;
 
 /**
  * Servicio encargado de gestionar la lógica principal de la simulación.
- * Calcula las generaciones futuras del tablero basándose en las reglas de las entidades.
+ * Calcula las generaciones futuras del tablero basándose en las reglas de las entidades
+ * (infecciones, recuperaciones, muertes y vacunaciones).
  */
 @Service
 public class GameService {
@@ -17,8 +18,8 @@ public class GameService {
     // 1: Casilla sana
     // 2: Casilla curativa
     /**
-     * Inicializa el tablero colocando las entidades base: 4 hospitales (valor 2) y 5 pacientes infectados (valor 0)
-     * en posiciones aleatorias.
+     * Inicializa el tablero colocando las entidades base: 4 hospitales (valor 3) y
+     * 5 pacientes infectados (valor 0) en posiciones aleatorias.
      *
      * @param grid Matriz bidimensional vacía (o con celdas sanas).
      * @return La matriz modificada con las entidades iniciales plantadas.
@@ -59,7 +60,7 @@ public class GameService {
 
     /**
      * Calcula el estado de todas las celdas para el siguiente turno aplicando las reglas de infección,
-     * curación e inmunidad de rebaño.
+     * curación, inmunidad de rebaño y muerte.
      *
      * @param gridActual Matriz con el estado actual del tablero.
      * @return Una nueva matriz representando el estado del tablero en la siguiente generación.
@@ -159,7 +160,7 @@ public class GameService {
     }
 
     /**
-     * Mueve aleatoriamente todos los hospitales (entidad 2) a una celda adyacente que esté sana (distinta de 2).
+     * Mueve aleatoriamente todos los hospitales (entidades) a una celda adyacente que esté sana.
      *
      * @param grid Matriz del tablero cuyo estado se modificará in-place.
      */

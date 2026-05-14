@@ -15,8 +15,6 @@ import java.util.List;
 import java.util.Map;
 
 import modelo.DatosSimulation;
-
-// Nuevos imports para la lógica del juego
 import servicios.GameService;
 
 /**
@@ -31,10 +29,11 @@ public class GridController {
 	private final GameService gameService;
 
 	/**
-     * Constructor para inyectar las dependencias necesarias.
-     * * @param ics    Servicio de interfaz para comunicarse con el sistema de simulación.
-     * @param logger Componente para el registro de trazas y eventos.
-     */
+	 * Constructor para inyectar las dependencias necesarias.
+	 * * @param ics         Servicio de interfaz para comunicarse con el sistema de simulación.
+	 * @param logger      Componente para el registro de trazas y eventos.
+	 * @param gameService Servicio que gestiona la lógica principal de la simulación del juego.
+	 */
 
 	public GridController(InterfazContactoSim ics, Logger logger, GameService gameService) {
 		this.ics = ics;
@@ -43,13 +42,14 @@ public class GridController {
 	}
 
 	/**
-     * Maneja la petición GET para visualizar la cuadrícula de simulación.
-     * Extrae los datos de la simulación usando el token proporcionado y prepara el mapa de colores.
-     * * @param tok     Token o identificador único de la simulación descargada.
-     * @param model   Modelo de Spring para pasar los atributos a la plantilla de Thymeleaf.
-     * @param session Sesión HTTP actual para verificar si el usuario ha iniciado sesión.
-     * @return El nombre de la vista HTML ("grid") o una redirección a la raíz si no hay sesión.
-     */
+	 * Maneja la petición GET para visualizar la cuadrícula de simulación.
+	 * Extrae los datos de la simulación usando el token proporcionado, procesa la
+	 * simulación completa y prepara el mapa de colores para la vista.
+	 * * @param tok     Token o identificador único de la simulación descargada.
+	 * @param model   Modelo de Spring para pasar los atributos a la plantilla de Thymeleaf.
+	 * @param session Sesión HTTP actual para verificar si el usuario ha iniciado sesión.
+	 * @return El nombre de la vista HTML ("grid") o una redirección a la raíz si no hay sesión.
+	 */
 	@GetMapping("/grid")
 	public String mostrarGrid(@RequestParam("tok") int tok, Model model, HttpSession session) {
 		String username = (String) session.getAttribute("username");

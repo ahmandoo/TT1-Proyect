@@ -22,8 +22,8 @@ import interfaces.InterfazContactoSim;
 import modelo.DatosSolicitud;
 /**
  * Controlador de Spring MVC que gestiona el ciclo de vida de una solicitud de simulación.
- * Maneja la presentación del formulario, la validación de datos de entrada y
- * la comunicación con el servicio de simulación.
+ * Maneja la presentación del formulario, la validación de los datos de entrada y
+ * la comunicación con el servicio de simulación externo.
  */
 @Controller
 public class SolicitudController {
@@ -32,12 +32,12 @@ public class SolicitudController {
 	private final Logger logger;
     private final UsuarioRepository usuarioRepo;
     private final SolicitudRepository solicitudRepo;
-	/**
-     * Constructor para inyectar dependencias de servicios y repositorios.
-     * @param ics           Servicio para interactuar con la lógica de simulación externa.
-     * @param logger        Componente para el registro de eventos y errores.
-     * @param usuarioRepo   Repositorio para la persistencia de usuarios.
-     * @param solicitudRepo Repositorio para la persistencia de solicitudes.
+    /**
+     * Constructor para inyectar las dependencias de servicios y repositorios.
+     * * @param ics           Servicio para interactuar con la lógica de simulación externa.
+     * @param logger        Componente para el registro de eventos, advertencias y errores.
+     * @param usuarioRepo   Repositorio para la persistencia y consulta de usuarios.
+     * @param solicitudRepo Repositorio para la persistencia y consulta de solicitudes.
      */
     public SolicitudController(InterfazContactoSim ics, Logger logger,
                                UsuarioRepository usuarioRepo, SolicitudRepository solicitudRepo) {
@@ -48,12 +48,12 @@ public class SolicitudController {
     }
 
     /**
-     * Prepara y muestra el formulario de solicitud.
+     * Prepara y muestra el formulario de solicitud de simulaciones.
      * Verifica que el usuario tenga una sesión activa; de lo contrario, redirige al inicio.
      * Carga las entidades disponibles para la simulación mediante {@link InterfazContactoSim}.
-     *  @param model Objeto para añadir atributos a la vista.
-     * @param session Sesión actual del usuario para validar autenticación.
-     * @return String con el nombre de la plantilla HTML ("solicitud") o redirección.
+     * * @param model   Modelo de Spring para añadir los atributos de entidades a la vista.
+     * @param session Sesión actual del usuario para validar la autenticación.
+     * @return String con el nombre de la plantilla HTML ("solicitud") o redirección si no hay sesión.
      */
 
     @GetMapping("/solicitud")
@@ -64,20 +64,20 @@ public class SolicitudController {
         model.addAttribute("entities", ics.getEntities());
         return "solicitud";
     }
-	
-   /**
-     * Procesa el envío del formulario, valida los datos e inicia la simulación.
+
+    /**
+     * Procesa el envío del formulario, valida los datos e inicia una nueva simulación.
      * <p>
      * El proceso incluye:
      * <ul>
-     * <li>Validación de sesión y formato numérico de los datos.</li>
-     * <li>Comprobación de IDs de entidad válidos mediante {@link InterfazContactoSim}.</li>
-     * <li>Persistencia de la solicitud con estado "PENDIENTE" si el servidor acepta la petición.</li>
+     * <li>Validación de sesión y formato numérico (enteros positivos) de los datos ingresados.</li>
+     * <li>Comprobación de que los IDs correspondan a entidades válidas mediante {@link InterfazContactoSim}.</li>
+     * <li>Persistencia de la solicitud con estado "PENDIENTE" si el servidor remoto acepta la petición.</li>
      * </ul>
-     * @param formData Mapa con los datos del formulario (ID de entidad y cantidad).
-     * @param model    Objeto para devolver errores o el token generado a la vista.
-     * @param session  Sesión para identificar al autor de la solicitud.
-     * @return La vista "formResult" con el resumen de la operación.
+     * * @param formData Mapa con los datos capturados del formulario (clave: ID de entidad, valor: cantidad).
+     * @param model    Modelo de Spring para devolver la lista de errores o el token generado a la vista.
+     * @param session  Sesión HTTP para identificar al autor de la solicitud.
+     * @return El nombre de la vista HTML ("formResult") con el resumen y resultado de la operación.
      */
     @PostMapping("/solicitud")
     public String handleSolicitud(@RequestParam Map<String, String> formData, Model model, HttpSession session) {
@@ -126,11 +126,11 @@ public class SolicitudController {
         return "formResult";
     }
 
-	/**
+    /**
      * Recupera y muestra el historial de simulaciones solicitadas por el usuario actual.
-     * @param model   Objeto para pasar la lista de {@link SolicitudEntity} a la vista.
-     * @param session Sesión actual para filtrar las solicitudes por nombre de usuario.
-     * @return El nombre de la plantilla "historial" o redirección a la raíz si no hay sesión.
+     * * @param model   Modelo de Spring para pasar la lista de {@link SolicitudEntity} a la vista.
+     * @param session Sesión HTTP actual para filtrar las solicitudes por nombre de usuario.
+     * @return El nombre de la plantilla HTML ("historial") o redirección a la raíz si no hay sesión.
      */
     @GetMapping("/historial")
     public String mostrarHistorial(Model model, HttpSession session) {

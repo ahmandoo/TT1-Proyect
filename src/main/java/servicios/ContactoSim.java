@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 /**
- * Implementación del servicio de comunicación con la simulación.
- * Utiliza los clientes de la API (SolicitudApi y ResultadosApi) para enviar 
- * peticiones y procesar respuestas.
+ * Implementación del servicio de comunicación con la API de simulación externa.
+ * Utiliza los clientes generados por OpenAPI (SolicitudApi y ResultadosApi) para enviar
+ * peticiones de simulación y procesar la descarga de resultados.
  */
 @Service
 public class ContactoSim implements InterfazContactoSim {
@@ -19,8 +19,8 @@ public class ContactoSim implements InterfazContactoSim {
     private final utilidades.api.ResultadosApi resultadosApi;
     /**
      * Constructor que inyecta los clientes generados por OpenAPI.
-     * * @param solicitudApi Cliente de la API para manejar solicitudes.
-     * @param resultadosApi Cliente de la API para descargar resultados.
+     * * @param solicitudApi  Cliente de la API encargado de emitir nuevas solicitudes.
+     * @param resultadosApi Cliente de la API encargado de descargar los resultados de simulaciones.
      */
     public ContactoSim(utilidades.api.SolicitudApi solicitudApi, utilidades.api.ResultadosApi resultadosApi) {
         this.solicitudApi = solicitudApi;
@@ -28,8 +28,11 @@ public class ContactoSim implements InterfazContactoSim {
     }
     /**
      * {@inheritDoc}
-     * Mapea internamente los modelos locales a los modelos generados por OpenAPI antes de hacer la petición HTTP.
-     * @return El token de la solicitud generado por el servidor, o -1 en caso de fallo.
+     * Mapea internamente los modelos locales a los modelos generados por OpenAPI antes de realizar
+     * la petición HTTP mediante el cliente.
+     * * @param sol     Objeto con los datos numéricos de las entidades solicitadas.
+     * @param usuario Nombre del usuario que realiza la petición.
+     * @return El token de la solicitud generado por el servidor remoto, o -1 en caso de fallo o excepción.
      */
     @Override
     public int solicitarSimulation(DatosSolicitud sol, String usuario) {
@@ -61,10 +64,12 @@ public class ContactoSim implements InterfazContactoSim {
 
     /**
      * {@inheritDoc}
-     * Descarga la respuesta del servidor y parsea el campo de datos (String en formato CSV).
-     * La primera línea define el ancho del tablero, y las siguientes definen puntos en 
-     * formato: <code>tiempo, y, x, color</code>.
-     * @return Un objeto {@link DatosSimulation} poblado con los puntos y dimensiones.
+     * Descarga la respuesta del servidor para un ticket específico y la parsea desde formato CSV.
+     * La primera línea define el ancho del tablero y las siguientes definen puntos
+     * bajo el formato: {@code tiempo, y, x, color}.
+     * * @param ticket  Token o identificador único de la simulación.
+     * @param usuario Nombre del usuario que solicita la descarga.
+     * @return Un objeto {@link DatosSimulation} poblado con los puntos, dimensiones y tiempos máximos.
      */
     @Override
     public DatosSimulation descargarDatos(int ticket,String usuario) {
@@ -118,8 +123,9 @@ public class ContactoSim implements InterfazContactoSim {
     }
 
     /**
-     * Obtiene el listado de entidades monitorizables disponibles en el sistema.
-     * @return Lista de objetos {@link Entidad}.
+     * {@inheritDoc}
+     * Obtiene el listado de entidades predefinidas que pueden ser monitorizadas en el sistema.
+     * * @return Lista de objetos {@link Entidad} disponibles (Viviendas, Coches, Temperatura, Combustible).
      */
     @Override
     public List<Entidad> getEntities() {
@@ -138,9 +144,10 @@ public class ContactoSim implements InterfazContactoSim {
     }
 
     /**
-     * Valida si un identificador de entidad corresponde a uno de los tipos permitidos.
-     * @param id Identificador a validar.
-     * @return {@code true} si el ID está entre 1 y 4, {@code false} en caso contrario.
+     * {@inheritDoc}
+     * Valida si un identificador numérico corresponde a uno de los tipos de entidades permitidas.
+     * * @param id Identificador numérico a validar.
+     * @return {@code true} si el ID está en el rango permitido (1 a 4), {@code false} en caso contrario.
      */
     @Override
     public boolean isValidEntityId(int id) {

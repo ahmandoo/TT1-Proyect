@@ -19,8 +19,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Controlador de Spring MVC encargado de gestionar el flujo de correos.
- * Permite a los usuarios ver su bandeja de entrada, correos enviados y enviar nuevos mensajes.
+ * Controlador de Spring MVC encargado de gestionar el flujo de correos internos del sistema.
+ * Permite a los usuarios visualizar su bandeja de entrada, revisar los correos enviados
+ * y redactar nuevos mensajes.
  */
 @Controller
 public class CorreoController {
@@ -35,11 +36,11 @@ public class CorreoController {
     private InterfazContactoSim ics;
 
     /**
-     * Muestra la bandeja de entrada del usuario con los correos recibidos ordenados por fecha.
+     * Muestra la bandeja de entrada del usuario con los correos recibidos ordenados por fecha descendente.
      *
      * @param session Sesión HTTP actual para verificar si el usuario está autenticado.
      * @param model   Modelo de Spring para pasar la lista de correos a la vista.
-     * @return El nombre de la vista HTML de la bandeja de entrada, o redirección al inicio si no hay sesión.
+     * @return El nombre de la vista HTML de la bandeja de entrada ("solicitud"), o redirección al inicio si no hay sesión activa.
      */
     @GetMapping("/correos/bandeja")
     public String verBandejaEntrada(HttpSession session, Model model) {
@@ -57,7 +58,7 @@ public class CorreoController {
      *
      * @param session Sesión HTTP actual para obtener el usuario autenticado.
      * @param model   Modelo de Spring para pasar la lista de correos enviados a la vista.
-     * @return El nombre de la vista HTML "correos_enviados", o redirección al inicio si no hay sesión.
+     * @return El nombre de la vista HTML ("correos_enviados"), o redirección al inicio si no hay sesión activa.
      */
     @GetMapping("/correos/enviados")
     public String verEnviados(HttpSession session, Model model) {
@@ -75,7 +76,7 @@ public class CorreoController {
      *
      * @param session Sesión HTTP actual.
      * @param model   Modelo de Spring para pasar el nombre del usuario actual a la vista.
-     * @return El nombre de la vista HTML "enviar_correo", o redirección al inicio si no hay sesión.
+     * @return El nombre de la vista HTML ("enviar_correo"), o redirección al inicio si no hay sesión activa.
      */
     @GetMapping("/correos/nuevo")
     public String redactarCorreo(HttpSession session, Model model) {
@@ -88,13 +89,13 @@ public class CorreoController {
 
     /**
      * Procesa el envío de un nuevo correo desde el formulario.
-     * Verifica que el destinatario exista, solicita una nueva simulación asociada y guarda el correo.
+     * Verifica que el destinatario exista, solicita una nueva simulación asociada y guarda el correo en la base de datos.
      *
      * @param destino Nombre del usuario que recibirá el correo.
      * @param mensaje Contenido del mensaje a enviar.
-     * @param session Sesión HTTP para identificar al remitente.
+     * @param session Sesión HTTP para identificar al remitente (usuario origen).
      * @param model   Modelo de Spring para devolver mensajes de error si el destinatario no existe.
-     * @return Redirección a la vista de correos enviados si tiene éxito, o recarga el formulario en caso de error.
+     * @return Redirección a la vista de correos enviados ("/correos/enviados") si tiene éxito, o recarga el formulario en caso de error.
      */
     @PostMapping("/correos/enviar")
     public String procesarEnvio(@RequestParam String destino, @RequestParam String mensaje, HttpSession session, Model model) {
