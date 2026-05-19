@@ -58,8 +58,9 @@ public class GridController {
 		}
 		DatosSimulation ds = ics.descargarDatos(tok, username);
 
-		int ancho = ds.getAnchoTablero();
-		int maxSegundos = ds.getMaxSegundos();
+		// En vez de utilizar los datos que pasaba la API, hemos aumentado el tamaño del grid y las generaciones para que sea mas realista y grande.
+		int ancho = 60;
+		int maxSegundos = 100;
 
 		model.addAttribute("count", ancho);
 		model.addAttribute("maxTime", maxSegundos);
@@ -88,11 +89,12 @@ public class GridController {
 					int estado = gridActual[y][x];
 					String colorHex = "";
 
-					if (estado == 1) colorHex = "blue";          // Sanos (Vulnerables)
+					if (estado == -1) colorHex = "white";        // Hueco en blanco
+                	else if (estado == 1) colorHex = "blue";     // Sanos
 					else if (estado == 0) colorHex = "red";      // Infectados
-					else if (estado == 2) colorHex = "black";    // Muertos (Inertes)
-					else if (estado == 3) colorHex = "green";    // Vacunados (Inmunes)
-					else if (estado == 4) colorHex = "yellow";   // Recuperados (Anticuerpos)
+					else if (estado == 2) colorHex = "black";    // Muertos
+					else if (estado == 3) colorHex = "green";    // Vacunados
+					else if (estado == 4) colorHex = "yellow";   // Recuperados
 
 					colors.put(t + "-" + y + "-" + x, colorHex);
 				}

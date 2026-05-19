@@ -13,10 +13,18 @@ import java.util.List;
 @Service
 public class GameService {
 
-    // Entidades:
+    // ESTADOS:
+    // -1: Hueco en blanco (nuevo)
     // 0: Casilla infectada
     // 1: Casilla sana
-    // 2: Casilla curativa
+    // 2: Casilla muerta
+    // 3: Casilla vacunada
+    // 4: Casilla recuperada
+
+    // MOVILIDAD:
+    // 0: Local (se mueve poco)
+    // 1: Viajero (se mueve mucho)
+
     /**
      * Inicializa el tablero colocando las entidades base: 4 hospitales (valor 3) y
      * 5 pacientes infectados (valor 0) en posiciones aleatorias.
@@ -25,16 +33,50 @@ public class GameService {
      * @return La matriz modificada con las entidades iniciales plantadas.
      */
 
-    private int[][] plantarEntidadesIniciales(int[][] grid) {
-        for(int i = 0; i < 5; i++) {
-            grid[(int)(Math.random() * grid.length)][(int)(Math.random() * grid[0].length)] = 0;
+    private int[][] plantarEntidadesIniciales(int[][] grid, int[][] movilidad) {
+        int filas = grid.length;
+        int columnas = grid[0].length;
+
+        // 1. Inicializamos el tablero con espacios en blanco (-1)
+        for(int i = 0; i < filas; i++) {
+            for(int j = 0; j < columnas; j++) {
+                grid[i][j] = -1;
+                movilidad[i][j] = 0;
+            }
         }
 
+        // Plantamos el 70% de la población como Sanos (1) en los huecos en blanco (-1)
+        int totalPoblacion = (int) (filas * columnas * 0.70);
+        for (int i = 0; i < totalPoblacion; i++) {
+            plantarEntidadEnEspecifico(grid, movilidad, 1, -1);
+        }
+
+        // Convertimos a 5 Sanos (1) en Infectados (0)
+        for(int i = 0; i < 5; i++) {
+            plantarEntidadEnEspecifico(grid, movilidad, 0, 1);
+        }
+
+        // Convertimos a 4 Sanos (1) en Vacunados (3)
         for(int i = 0; i < 4; i++) {
-            grid[(int)(Math.random() * grid.length)][(int)(Math.random() * grid[0].length)] = 3;
+            plantarEntidadEnEspecifico(grid, movilidad, 3, 1);
         }
 
         return grid;
+    }
+
+    private void plantarEntidadEnEspecifico(int[][] grid, int[][] movilidad, int estadoDeseado, int estadoSustituible) {
+        int filas = grid.length;
+        int columnas = grid[0].length;
+        int f, c;
+        do {
+            f = (int)(Math.random() * filas);
+            c = (int)(Math.random() * columnas);
+
+        } while (grid[f][c] != estadoSustituible);
+
+        grid[f][c] = estadoDeseado;
+
+        movilidad[f][c] = (Math.random() < 0.20) ? 1 : 0;
     }
 
     /**
@@ -47,15 +89,71 @@ public class GameService {
     public List<int[][]> procesarSimulacionCompleta(int[][] gridInicial, int generaciones) {
         List<int[][]> historial = new ArrayList<>();
 
-        int[][] gridActual = plantarEntidadesIniciales(gridInicial);
-        historial.add(gridActual);
+        int filas = gridInicial.length;
+        int columnas = gridInicial[0].length;
+        int[][] movilidad = new int[filas][columnas];
+
+        int[][] gridActual = plantarEntidadesIniciales(gridInicial, movilidad);
+        historial.add(clonarMatriz(gridActual));
 
         for (int i = 0; i < generaciones; i++) {
+            // Primero las celulas se mueven
+            faseDeMovimiento(gridActual, movilidad);
+
+            // Calculamos quien se infecta y como evoluciona la población
             gridActual = calcularSiguienteGeneracion(gridActual);
-            historial.add(gridActual);
+
+            historial.add(clonarMatriz(gridActual));
         }
 
         return historial;
+    }
+
+    private void faseDeMovimiento(int[][] grid, int[][] movilidad) {
+        int filas = grid.length;
+        int columnas = grid[0].length;
+
+        for (int i = 0; i < filas; i++) {
+            for (int j = 0; j < columnas; j++) {
+                // Solo se mueven los vivos (1, 0, 3, 4)
+                int estado = grid[i][j];
+                if (estado != -1 && estado != 2) {
+                    boolean esViajero = (movilidad[i][j] == 1);
+                    double probMovimiento = esViajero ? 0.80 : 0.10;
+
+                    if (Math.random() < probMovimiento) {
+                        int[] hueco = buscarHuecoVacio(grid, i, j);
+                        if (hueco != null) {
+                            // Intercambiamos posiciones
+                            int fHueco = hueco[0];
+                            int cHueco = hueco[1];
+
+                            grid[fHueco][cHueco] = estado;
+                            movilidad[fHueco][cHueco] = movilidad[i][j];
+
+                            grid[i][j] = -1; // Se queda vacío
+                            movilidad[i][j] = 0;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private int[] buscarHuecoVacio(int[][] grid, int fila, int col) {
+        int filas = grid.length;
+        int columnas = grid[0].length;
+        List<int[]> huecos = new ArrayList<>();
+
+        if (fila > 0 && grid[fila - 1][col] == -1) huecos.add(new int[]{fila - 1, col});
+        if (fila < filas - 1 && grid[fila + 1][col] == -1) huecos.add(new int[]{fila + 1, col});
+        if (col > 0 && grid[fila][col - 1] == -1) huecos.add(new int[]{fila, col - 1});
+        if (col < columnas - 1 && grid[fila][col + 1] == -1) huecos.add(new int[]{fila, col + 1});
+
+        if (!huecos.isEmpty()) {
+            return huecos.get((int) (Math.random() * huecos.size()));
+        }
+        return null;
     }
 
     /**
@@ -73,41 +171,40 @@ public class GameService {
         for (int i = 0; i < filas; i++) {
             for (int j = 0; j < columnas; j++) {
                 int estado = gridActual[i][j];
-                int infectadosCerca = contarVecinos(gridActual, i, j, 0); // Contamos los rojos alrededor
+                int infectadosCerca = contarVecinos(gridActual, i, j, 0);
 
                 if (estado == 1) {
-                    // Lógica de una célula sana (valor 1)
+                    // Lógica sano (1)
                     if (infectadosCerca > 0) {
-                        // Riesgo de contagio normal (ej. 40%)
-                        gridFuturo[i][j] = (Math.random() < 0.40) ? 0 : 1;
+
+                        gridFuturo[i][j] = (Math.random() < 0.50) ? 0 : 1;
                     } else {
-                        // Cada turno un sano tiene un 2% de vacunarse espontáneamente
-                        gridFuturo[i][j] = (Math.random() < 0.02) ? 3 : 1;
+                        // Vacunación espontánea muy lenta (0.1% por turno)
+                        gridFuturo[i][j] = (Math.random() < 0.001) ? 3 : 1;
                     }
 
                 } else if (estado == 0) {
-                    // Lógica de una célula infectada (valor 0)
+                    // Lógica infectados (0)
                     double dado = Math.random();
-                    if (dado < 0.10) {
-                        gridFuturo[i][j] = 2; // 10% de probabilidad de Morir
-                    } else if (dado < 0.30) {
-                        gridFuturo[i][j] = 4; // 20% de probabilidad de Recuperarse (Anticuerpos)
+                    // Ahora duran mucho más vivos contagiando.
+                    if (dado < 0.02) {         // 2% de morir por turno
+                        gridFuturo[i][j] = 2;
+                    } else if (dado < 0.05) {  // 3% de recuperar por turno (0.05 - 0.02)
+                        gridFuturo[i][j] = 4;
                     } else {
-                        gridFuturo[i][j] = 0; // Sigue infectado
+                        gridFuturo[i][j] = 0;  // 95% de seguir infectado
                     }
 
                 } else if (estado == 4) {
-                    // Lógica de una célula recuperada con anticuerpos (valor 4)
+                    // Lógica recuperado (4)
                     if (infectadosCerca > 0) {
-                        // Se puede reinfectar, pero es mucho más difícil (5% de reinfectarse)
                         gridFuturo[i][j] = (Math.random() < 0.05) ? 0 : 4;
                     } else {
-                        gridFuturo[i][j] = 4; // Sigue con anticuerpos
+                        gridFuturo[i][j] = 4;
                     }
 
                 } else {
-                    // Lógica de celulas muertas/infectadas (valores 2, 3)
-                    // Son estados inmutables, se quedan exactamente igual
+                    // Huecos (-1), muertos (2), vacunados (3)
                     gridFuturo[i][j] = estado;
                 }
             }
@@ -137,65 +234,12 @@ public class GameService {
         return count;
     }
 
-    /**
-     * Verifica de forma rápida si existe al menos una celda adyacente de un tipo específico.
-     * Útil para comprobar si hay curas (hospitales) cerca.
-     *
-     * @param grid        Matriz del tablero.
-     * @param fila        Posición Y de la celda a evaluar.
-     * @param col         Posición X de la celda a evaluar.
-     * @param tipoEntidad Valor entero de la entidad a buscar.
-     * @return true si hay al menos un vecino del tipo indicado, false en caso contrario.
-     */
-    private boolean comprobarVecinos(int[][] grid, int fila, int col, int tipoEntidad) {
-        int filas = grid.length;
-        int columnas = grid[0].length;
-
-        if (fila > 0 && grid[fila - 1][col] == tipoEntidad) return true;
-        if (fila < filas - 1 && grid[fila + 1][col] == tipoEntidad) return true;
-        if (col > 0 && grid[fila][col - 1] == tipoEntidad) return true;
-        if (col < columnas - 1 && grid[fila][col + 1] == tipoEntidad) return true;
-
-        return false;
-    }
-
-    /**
-     * Mueve aleatoriamente todos los hospitales (entidades) a una celda adyacente que esté sana.
-     *
-     * @param grid Matriz del tablero cuyo estado se modificará in-place.
-     */
-    private void moverHospitales(int[][] grid) {
-        int filas = grid.length;
-        int columnas = grid[0].length;
-        List<int[]> posicionesHospitales = new ArrayList<>();
-
-        for (int i = 0; i < filas; i++) {
-            for (int j = 0; j < columnas; j++) {
-                if (grid[i][j] == 2) {
-                    posicionesHospitales.add(new int[]{i, j});
-                }
-            }
+    private int[][] clonarMatriz(int[][] original) {
+        int[][] clon = new int[original.length][original[0].length];
+        for (int i = 0; i < original.length; i++) {
+            System.arraycopy(original[i], 0, clon[i], 0, original[i].length);
         }
-
-        for (int[] pos : posicionesHospitales) {
-            int f = pos[0];
-            int c = pos[1];
-
-            List<int[]> movimientosPosibles = new ArrayList<>();
-            if (f > 0 && grid[f - 1][c] != 2) movimientosPosibles.add(new int[]{f - 1, c});
-            if (f < filas - 1 && grid[f + 1][c] != 2) movimientosPosibles.add(new int[]{f + 1, c});
-            if (c > 0 && grid[f][c - 1] != 2) movimientosPosibles.add(new int[]{f, c - 1});
-            if (c < columnas - 1 && grid[f][c + 1] != 2) movimientosPosibles.add(new int[]{f, c + 1});
-
-            if (!movimientosPosibles.isEmpty()) {
-
-                int indiceAleatorio = (int) (Math.random() * movimientosPosibles.size());
-                int[] nuevoDestino = movimientosPosibles.get(indiceAleatorio);
-
-                grid[f][c] = 1;
-                grid[nuevoDestino[0]][nuevoDestino[1]] = 2;
-            }
-        }
+        return clon;
     }
 
 
