@@ -58,16 +58,23 @@ public class GridController {
 		}
 		DatosSimulation ds = ics.descargarDatos(tok, username);
 
-		// En vez de utilizar los datos que pasaba la API, hemos aumentado el tamaño del grid y las generaciones para que sea mas realista y grande.
-		int ancho = 60;
-		int maxSegundos = 100;
+		Integer anchoSesion = (Integer) session.getAttribute("sim_ancho");
+		Integer generacionesSesion = (Integer) session.getAttribute("sim_generaciones");
+		Integer infectadosSesion = (Integer) session.getAttribute("sim_infectados");
+		Integer vacunadosSesion = (Integer) session.getAttribute("sim_vacunados");
+		Integer movilidadSesion = (Integer) session.getAttribute("sim_movilidad");
+
+		int ancho = (anchoSesion != null) ? anchoSesion : 50;
+		int maxSegundos = (generacionesSesion != null) ? generacionesSesion : 80;
+		int infectadosInit = (infectadosSesion != null) ? infectadosSesion : 5;
+		int vacunadosInit = (vacunadosSesion != null) ? vacunadosSesion : 10;
+		int porcentajeViajeros = (movilidadSesion != null) ? movilidadSesion : 20;
+
+		double porcentajeInfeccion = 0.50;
 
 		model.addAttribute("count", ancho);
 		model.addAttribute("maxTime", maxSegundos);
 
-		// Nueva lógica implementada:
-
-		// Inicializamos un nuevo grid vacío
 		int[][] gridLimpio = new int[ancho][ancho];
 		for(int i = 0; i < ancho; i++) {
 			for(int j = 0; j < ancho; j++) {
@@ -75,10 +82,8 @@ public class GridController {
 			}
 		}
 
-		// Procesamos la simulación completa del juego (historial de generaciones)
-
+		gameService.configurarSimulacion(infectadosInit, vacunadosInit, porcentajeViajeros, porcentajeInfeccion);
 		List<int[][]> historialJuego = gameService.procesarSimulacionCompleta(gridLimpio, maxSegundos);
-		// Mapeamos las matrices al formato HashMap que necesita la vista HTML
 		Map<String, String> colors = new HashMap<>();
 
 		for(int t = 0; t < historialJuego.size(); t++) {
@@ -89,12 +94,12 @@ public class GridController {
 					int estado = gridActual[y][x];
 					String colorHex = "";
 
-					if (estado == -1) colorHex = "white";        // Hueco en blanco
-                	else if (estado == 1) colorHex = "blue";     // Sanos
-					else if (estado == 0) colorHex = "red";      // Infectados
-					else if (estado == 2) colorHex = "black";    // Muertos
-					else if (estado == 3) colorHex = "green";    // Vacunados
-					else if (estado == 4) colorHex = "yellow";   // Recuperados
+					if (estado == -1) colorHex = "white";
+					else if (estado == 1) colorHex = "blue";
+					else if (estado == 0) colorHex = "red";
+					else if (estado == 2) colorHex = "black";
+					else if (estado == 3) colorHex = "green";
+					else if (estado == 4) colorHex = "yellow";
 
 					colors.put(t + "-" + y + "-" + x, colorHex);
 				}
@@ -102,7 +107,6 @@ public class GridController {
 		}
 
 		model.addAttribute("colors", colors);
-
 		return "grid";
 	}
 }

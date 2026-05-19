@@ -21,9 +21,9 @@
 
 <form th:action="@{/solicitud}" method="POST">
 
-	<h3>Entorno y Duración</h3>
+	<h3>Entorno</h3>
 	<div class="form-group">
-		<label>Tamaño del Mapa (Ancho x Alto):</label>
+		<label>Tamaño del Mapa:</label>
 		<input type="number" name="ancho" value="50" min="20" max="100" required>
 	</div>
 	<div class="form-group">
@@ -45,20 +45,6 @@
 	<div class="form-group">
 		<label>% de Viajeros (Alta Movilidad):</label>
 		<input type="number" name="porcentajeViajeros" value="20" min="0" max="100" required>
-	</div>
-
-	<button type="submit" style="padding: 10px 20px; font-size: 16px; cursor: pointer;">Iniciar Pandemia</button>
-	<h3>Movilidad (Comportamiento)</h3>
-	<div class="form-group">
-		<label>% de Viajeros (Alta Movilidad):</label>
-		<input type="number" name="porcentajeViajeros" value="20" min="0" max="100" required>
-	</div>
-
-	<div class="form-group" style="margin-top: 20px; margin-bottom: 20px;">
-		<label style="cursor: pointer;">
-			<input type="checkbox" name="enviarCorreo" value="true" style="width: auto; margin-right: 10px;">
-			Deseo recibir los resultados por correo electrónico
-		</label>
 	</div>
 
 	<button type="submit" style="padding: 10px 20px; font-size: 16px; cursor: pointer;">Iniciar Pandemia</button>

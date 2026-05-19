@@ -25,6 +25,18 @@ public class GameService {
     // 0: Local (se mueve poco)
     // 1: Viajero (se mueve mucho)
 
+    private int infectadosParam = 5;
+    private int vacunadosParam = 4;
+    private int viajerosPorcentajeParam = 20;
+    private double porcentajeInfeccionParam = 0.50;
+
+    public void configurarSimulacion(int infectados, int vacunados, int viajerosPorcentaje, double porcentajeInfeccion) {
+        this.infectadosParam = infectados;
+        this.vacunadosParam = vacunados;
+        this.viajerosPorcentajeParam = viajerosPorcentaje;
+        this.porcentajeInfeccionParam = porcentajeInfeccion;
+    }
+
     /**
      * Inicializa el tablero colocando las entidades base: 4 hospitales (valor 3) y
      * 5 pacientes infectados (valor 0) en posiciones aleatorias.
@@ -51,13 +63,11 @@ public class GameService {
             plantarEntidadEnEspecifico(grid, movilidad, 1, -1);
         }
 
-        // Convertimos a 5 Sanos (1) en Infectados (0)
-        for(int i = 0; i < 5; i++) {
+        for(int i = 0; i < this.infectadosParam; i++) {
             plantarEntidadEnEspecifico(grid, movilidad, 0, 1);
         }
 
-        // Convertimos a 4 Sanos (1) en Vacunados (3)
-        for(int i = 0; i < 4; i++) {
+        for(int i = 0; i < this.vacunadosParam; i++) {
             plantarEntidadEnEspecifico(grid, movilidad, 3, 1);
         }
 
@@ -76,7 +86,7 @@ public class GameService {
 
         grid[f][c] = estadoDeseado;
 
-        movilidad[f][c] = (Math.random() < 0.20) ? 1 : 0;
+        movilidad[f][c] = (Math.random() < (this.viajerosPorcentajeParam / 100.0)) ? 1 : 0;
     }
 
     /**
@@ -86,7 +96,7 @@ public class GameService {
      * @param generaciones Número total de generaciones (segundos) a simular.
      * @return Una lista de matrices bidimensionales, donde cada matriz es el estado del tablero en un instante de tiempo.
      */
-    public List<int[][]> procesarSimulacionCompleta(int[][] gridInicial, int generaciones) {
+    public synchronized List<int[][]> procesarSimulacionCompleta(int[][] gridInicial, int generaciones) {
         List<int[][]> historial = new ArrayList<>();
 
         int filas = gridInicial.length;
@@ -97,12 +107,8 @@ public class GameService {
         historial.add(clonarMatriz(gridActual));
 
         for (int i = 0; i < generaciones; i++) {
-            // Primero las celulas se mueven
             faseDeMovimiento(gridActual, movilidad);
-
-            // Calculamos quien se infecta y como evoluciona la población
             gridActual = calcularSiguienteGeneracion(gridActual);
-
             historial.add(clonarMatriz(gridActual));
         }
 
@@ -176,17 +182,14 @@ public class GameService {
                 if (estado == 1) {
                     // Lógica sano (1)
                     if (infectadosCerca > 0) {
-
-                        gridFuturo[i][j] = (Math.random() < 0.50) ? 0 : 1;
+                        gridFuturo[i][j] = (Math.random() < this.porcentajeInfeccionParam) ? 0 : 1;
                     } else {
-                        // Vacunación espontánea muy lenta (0.1% por turno)
                         gridFuturo[i][j] = (Math.random() < 0.001) ? 3 : 1;
                     }
 
                 } else if (estado == 0) {
                     // Lógica infectados (0)
                     double dado = Math.random();
-                    // Ahora duran mucho más vivos contagiando.
                     if (dado < 0.02) {         // 2% de morir por turno
                         gridFuturo[i][j] = 2;
                     } else if (dado < 0.05) {  // 3% de recuperar por turno (0.05 - 0.02)

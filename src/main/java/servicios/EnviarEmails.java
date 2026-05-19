@@ -21,9 +21,8 @@ public class EnviarEmails implements InterfazEnviarEmails {
     }
     /**
      * Envía un correo electrónico haciendo una llamada POST a la API externa.
-     * Actualmente está configurado para enviar por defecto al correo "alumno@unirioja.es".
      *
-     * @param dest   Objeto que representa al destinatario del correo (no usado de forma activa en la implementación actual).
+     * @param dest   Objeto que representa al destinatario del correo.
      * @param mensaje Contenido en formato texto del mensaje a enviar.
      * @return {@code true} si la petición a la API se realizó exitosamente; {@code false} en caso de que ocurra una excepción.
      */

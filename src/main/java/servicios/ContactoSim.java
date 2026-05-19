@@ -41,17 +41,34 @@ public class ContactoSim implements InterfazContactoSim {
             List<Integer> cantidades = new ArrayList<>();
             List<String> nombres = new ArrayList<>();
 
-            List<Entidad> entidadesDisponibles = getEntities();
-            sol.getNums().forEach((id, cantidad) -> {
-                cantidades.add(cantidad);
-                String nombreEntidad = entidadesDisponibles.stream()
-                        .filter(e -> e.getId() == id)
-                        .map(Entidad::getName)
-                        .findFirst()
-                        .orElse("Entidad Desconocida " + id);
+            nombres.add("Ancho");
+            cantidades.add(sol.getAncho());
 
-                nombres.add(nombreEntidad);
-            });
+            nombres.add("Generaciones");
+            cantidades.add(sol.getGeneraciones());
+
+            nombres.add("Infectados Iniciales");
+            cantidades.add(sol.getInfectadosInit());
+
+            nombres.add("Vacunados Iniciales");
+            cantidades.add(sol.getVacunadosInit());
+
+            nombres.add("Porcentaje Viajeros");
+            cantidades.add(sol.getPorcentajeViajeros());
+
+            if (sol.getNums() != null) {
+                List<Entidad> entidadesDisponibles = getEntities();
+                sol.getNums().forEach((id, cantidad) -> {
+                    cantidades.add(cantidad);
+                    String nombreEntidad = entidadesDisponibles.stream()
+                            .filter(e -> e.getId() == id)
+                            .map(Entidad::getName)
+                            .findFirst()
+                            .orElse("Entidad Desconocida " + id);
+                    nombres.add(nombreEntidad);
+                });
+            }
+
             apiSolicitud.setCantidadesIniciales(cantidades);
             apiSolicitud.setNombreEntidades(nombres);
 

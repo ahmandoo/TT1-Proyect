@@ -34,7 +34,7 @@ public class SolicitudController {
     private final Logger logger;
     private final UsuarioRepository usuarioRepo;
     private final SolicitudRepository solicitudRepo;
-    private final InterfazEnviarEmails emailService; // Dependencia gestionada por Amudi
+    private final InterfazEnviarEmails emailService;
 
     /**
      * Constructor para inyectar las dependencias de servicios y repositorios.
@@ -111,17 +111,16 @@ public class SolicitudController {
 
         logger.info("Atendida petición de simulación personalizada para el usuario: " + username);
 
-        // [TAREA DE MARIO] Almacenamiento dinámico de parámetros en sesión para el GridController
         session.setAttribute("sim_ancho", ancho);
         session.setAttribute("sim_generaciones", generaciones);
         session.setAttribute("sim_infectados", infectadosInit);
         session.setAttribute("sim_vacunados", vacunadosInit);
         session.setAttribute("sim_movilidad", porcentajeViajeros);
 
-        // Generación del payload para mantener compatibilidad con el endpoint externo de simulación
-        Map<Integer, Integer> dummyData = new HashMap<>();
-        dummyData.put(1, 1);
-        DatosSolicitud ds = new DatosSolicitud(dummyData);
+        Map<Integer, Integer> mapaEntidades = new HashMap<>();
+        mapaEntidades.put(1, infectadosInit);
+
+        DatosSolicitud ds = new DatosSolicitud(mapaEntidades, ancho, generaciones, infectadosInit, vacunadosInit, porcentajeViajeros);
 
         int tok = ics.solicitarSimulation(ds, username);
 
@@ -131,25 +130,6 @@ public class SolicitudController {
 
             solicitudRepo.save(new SolicitudEntity(tok, user, "PENDIENTE"));
             model.addAttribute("token", tok);
-
-            // =========================================================================
-            // [TAREA DE AMUDI] - BLOQUE DE ENVÍO DE CORREO ELECTRÓNICO ELECTIVO
-            // =========================================================================
-            if ("true".equals(enviarCorreo) && user.getEmail() != null && !user.getEmail().isEmpty()) {
-
-                String cuerpoMensaje = "ASUNTO: Simulación Epidemiológica Registrada\n\n"
-                        + "Hola " + username + ",\n\n"
-                        + "Tu simulación con parámetros personalizados se ha procesado con éxito.\n"
-                        + "Puedes visualizar la evolución del grid con tu token privado: " + tok + "\n\n"
-                        + "Atentamente,\nEl Equipo de Desarrollo TT1.";
-
-                Destinatario destinatario = new Destinatario(user.getEmail());
-                emailService.enviarEmail(destinatario, cuerpoMensaje);
-
-                logger.info("Notificación por correo electrónico enviada con éxito a: " + user.getEmail());
-            }
-            // =========================================================================
-
         } else {
             logger.error("Error en comunicación con el servidor remoto de simulación");
         }
