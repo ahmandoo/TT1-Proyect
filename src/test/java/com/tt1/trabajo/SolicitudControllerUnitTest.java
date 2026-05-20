@@ -73,13 +73,15 @@ public class SolicitudControllerUnitTest {
         when(usuarioRepository.findByUsername("usuarioPrueba"))
                 .thenReturn(Optional.of(usuarioMock));
 
-        when(icsMock.isValidEntityId(1)).thenReturn(true);
         when(icsMock.solicitarSimulation(any(), eq("usuarioPrueba"))).thenReturn(999);
-
 
         mockMvc.perform(post("/solicitud")
                         .session(session)
-                        .param("1", "5"))
+                        .param("ancho", "50")
+                        .param("generaciones", "80")
+                        .param("infectadosInit", "5")
+                        .param("vacunadosInit", "10")
+                        .param("porcentajeViajeros", "20"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("formResult"))
                 .andExpect(model().attribute("token", 999));

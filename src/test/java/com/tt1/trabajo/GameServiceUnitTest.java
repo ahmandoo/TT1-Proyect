@@ -51,8 +51,8 @@ public class GameServiceUnitTest {
         for(int i = 0; i < ancho; i++) {
             for(int j = 0; j < ancho; j++) {
                 int estado = ultimoGrid[i][j];
-                assertTrue(estado >= 0 && estado <= 4, 
-                    "El estado de la celda (" + i + "," + j + ") es " + estado + " y no es un valor válido (0-4)");
+                assertTrue(estado >= -1 && estado <= 4,
+                        "El estado de la celda (" + i + "," + j + ") es " + estado + " y no es un valor válido (-1 a 4)");
             }
         }
     }

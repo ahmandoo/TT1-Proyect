@@ -73,7 +73,15 @@ public class GameService {
 
         return grid;
     }
-
+    /**
+     * Busca de forma aleatoria una celda en el tablero que coincida con el estado sustituible
+     * y la reemplaza por el estado deseado. También asigna su movilidad basada en el porcentaje de viajeros.
+     *
+     * @param grid              Matriz que representa el tablero de la simulación.
+     * @param movilidad         Matriz que registra la movilidad de cada entidad.
+     * @param estadoDeseado     El valor numérico del nuevo estado que se quiere colocar.
+     * @param estadoSustituible El valor numérico del estado que la celda debe tener para poder ser reemplazada.
+     */
     private void plantarEntidadEnEspecifico(int[][] grid, int[][] movilidad, int estadoDeseado, int estadoSustituible) {
         int filas = grid.length;
         int columnas = grid[0].length;
@@ -145,7 +153,16 @@ public class GameService {
             }
         }
     }
-
+    /**
+     * Comprueba las celdas directamente adyacentes (arriba, abajo, izquierda, derecha)
+     * a unas coordenadas dadas para encontrar aquellas que estén en blanco (-1).
+     *
+     * @param grid Matriz del tablero actual.
+     * @param fila Coordenada Y (fila) de la celda de origen.
+     * @param col  Coordenada X (columna) de la celda de origen.
+     * @return Un array de enteros con las coordenadas [fila, columna] de un hueco vacío elegido al azar,
+     * o nulo si no hay ningún hueco disponible alrededor.
+     */
     private int[] buscarHuecoVacio(int[][] grid, int fila, int col) {
         int filas = grid.length;
         int columnas = grid[0].length;
@@ -236,7 +253,13 @@ public class GameService {
 
         return count;
     }
-
+    /**
+     * Realiza una copia profunda de una matriz bidimensional de enteros.
+     * Esto evita que las modificaciones en las generaciones futuras alteren el estado de las generaciones pasadas.
+     *
+     * @param original Matriz bidimensional que se desea copiar.
+     * @return Una nueva matriz con los mismos datos que la original.
+     */
     private int[][] clonarMatriz(int[][] original) {
         int[][] clon = new int[original.length][original[0].length];
         for (int i = 0; i < original.length; i++) {
