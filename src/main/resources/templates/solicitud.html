@@ -1,20 +1,53 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Welcome</title>
+	<title>Configuración de la Pandemia</title>
+	<style>
+		body { font-family: sans-serif; padding: 20px; }
+		.form-group { margin-bottom: 15px; }
+		label { display: inline-block; width: 250px; font-weight: bold; }
+		input[type="number"] { width: 100px; padding: 5px; }
+	</style>
 </head>
-	<body>
-    	<form th:action="@{/solicitud}" method="post">
-			<div th:each="entity : ${entities}">
-			        <div>
-			            <label th:for="${entity.id}" th:text="'Num. de' + ${entity.name} + ':'"></label>
-			            <input type="number" min="0" th:id="${entity.id}" th:name="${entity.id}" />
-			        </div>
-			</div>
-			<button type="submit">Solicitar</button>
-			<nav>
-				<a th:href="@{/logout}">Cerrar Sesión</a>
-			</nav>
-		</form>
-	</body>
+<body>
+<h1>Generar Nueva Simulación Epidemiológica</h1>
+<p>Hola, <span th:text="${session.username}" style="color: blue;"></span>. Configura los parámetros iniciales:</p>
+
+<nav>
+	<a th:href="@{/historial}">Ver mi historial</a> |
+	<a th:href="@{/logout}">Cerrar Sesión</a>
+</nav>
+<br>
+
+<form th:action="@{/solicitud}" method="POST">
+
+	<h3>Entorno</h3>
+	<div class="form-group">
+		<label>Tamaño del Mapa:</label>
+		<input type="number" name="ancho" value="50" min="20" max="100" required>
+	</div>
+	<div class="form-group">
+		<label>Generaciones (Segundos):</label>
+		<input type="number" name="generaciones" value="50" min="10" max="200" required>
+	</div>
+
+	<h3>Población Inicial</h3>
+	<div class="form-group">
+		<label>Infectados (Pacientes 0):</label>
+		<input type="number" name="infectadosInit" value="5" min="1" required>
+	</div>
+	<div class="form-group">
+		<label>Vacunados Iniciales:</label>
+		<input type="number" name="vacunadosInit" value="10" min="0" required>
+	</div>
+
+	<h3>Movilidad (Comportamiento)</h3>
+	<div class="form-group">
+		<label>% de Viajeros (Alta Movilidad):</label>
+		<input type="number" name="porcentajeViajeros" value="20" min="0" max="100" required>
+	</div>
+
+	<button type="submit" style="padding: 10px 20px; font-size: 16px; cursor: pointer;">Iniciar Pandemia</button>
+</form>
+</body>
 </html>

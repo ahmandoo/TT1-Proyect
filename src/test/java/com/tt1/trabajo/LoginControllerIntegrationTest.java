@@ -10,8 +10,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -24,12 +23,23 @@ public class LoginControllerIntegrationTest {
     private UsuarioRepository usuarioRepository;
 
     @Test
-    public void testDoLogin_CreaNuevoUsuarioSiNoExisteEnBD() throws Exception {
+    public void testDoLogin_UsuarioExiste() throws Exception {
+        UsuarioEntity usuarioExistente = new UsuarioEntity("usuarioRegistrado");
+        usuarioExistente.setEmail("test@unirioja.es");
+        usuarioRepository.save(usuarioExistente);
+
         mockMvc.perform(post("/login")
-                        .param("username", "usuarioNuevo"))
+                        .param("username", "usuarioRegistrado"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/solicitud"));
-        assertTrue(usuarioRepository.findByUsername("usuarioNuevo").isPresent(),
-                "El usuario debería haberse guardado en la BD al loguearse");
+    }
+
+    @Test
+    public void testDoLogin_UsuarioNoExiste() throws Exception {
+        mockMvc.perform(post("/login")
+                        .param("username", "usuarioFantasma"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("index"))
+                .andExpect(model().attributeExists("error"));
     }
 }

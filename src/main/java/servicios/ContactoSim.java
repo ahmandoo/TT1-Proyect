@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 /**
- * Implementación del servicio de comunicación con la simulación.
- * Utiliza los clientes de la API (SolicitudApi y ResultadosApi) para enviar 
- * peticiones y procesar respuestas.
+ * Implementación del servicio de comunicación con la API de simulación externa.
+ * Utiliza los clientes generados por OpenAPI (SolicitudApi y ResultadosApi) para enviar
+ * peticiones de simulación y procesar la descarga de resultados.
  */
 @Service
 public class ContactoSim implements InterfazContactoSim {
@@ -19,8 +19,8 @@ public class ContactoSim implements InterfazContactoSim {
     private final utilidades.api.ResultadosApi resultadosApi;
     /**
      * Constructor que inyecta los clientes generados por OpenAPI.
-     * * @param solicitudApi Cliente de la API para manejar solicitudes.
-     * @param resultadosApi Cliente de la API para descargar resultados.
+     * * @param solicitudApi  Cliente de la API encargado de emitir nuevas solicitudes.
+     * @param resultadosApi Cliente de la API encargado de descargar los resultados de simulaciones.
      */
     public ContactoSim(utilidades.api.SolicitudApi solicitudApi, utilidades.api.ResultadosApi resultadosApi) {
         this.solicitudApi = solicitudApi;
@@ -28,7 +28,11 @@ public class ContactoSim implements InterfazContactoSim {
     }
     /**
      * {@inheritDoc}
-     * Mapea internamente los modelos locales a los modelos generados por OpenAPI antes de hacer la petición HTTP.
+     * Mapea internamente los modelos locales a los modelos generados por OpenAPI antes de realizar
+     * la petición HTTP mediante el cliente.
+     * * @param sol     Objeto con los datos numéricos de las entidades solicitadas.
+     * @param usuario Nombre del usuario que realiza la petición.
+     * @return El token de la solicitud generado por el servidor remoto, o -1 en caso de fallo o excepción.
      */
     @Override
     public int solicitarSimulation(DatosSolicitud sol, String usuario) {
@@ -37,17 +41,34 @@ public class ContactoSim implements InterfazContactoSim {
             List<Integer> cantidades = new ArrayList<>();
             List<String> nombres = new ArrayList<>();
 
-            List<Entidad> entidadesDisponibles = getEntities();
-            sol.getNums().forEach((id, cantidad) -> {
-                cantidades.add(cantidad);
-                String nombreEntidad = entidadesDisponibles.stream()
-                        .filter(e -> e.getId() == id)
-                        .map(Entidad::getName)
-                        .findFirst()
-                        .orElse("Entidad Desconocida " + id);
+            nombres.add("Ancho");
+            cantidades.add(sol.getAncho());
 
-                nombres.add(nombreEntidad);
-            });
+            nombres.add("Generaciones");
+            cantidades.add(sol.getGeneraciones());
+
+            nombres.add("Infectados Iniciales");
+            cantidades.add(sol.getInfectadosInit());
+
+            nombres.add("Vacunados Iniciales");
+            cantidades.add(sol.getVacunadosInit());
+
+            nombres.add("Porcentaje Viajeros");
+            cantidades.add(sol.getPorcentajeViajeros());
+
+            if (sol.getNums() != null) {
+                List<Entidad> entidadesDisponibles = getEntities();
+                sol.getNums().forEach((id, cantidad) -> {
+                    cantidades.add(cantidad);
+                    String nombreEntidad = entidadesDisponibles.stream()
+                            .filter(e -> e.getId() == id)
+                            .map(Entidad::getName)
+                            .findFirst()
+                            .orElse("Entidad Desconocida " + id);
+                    nombres.add(nombreEntidad);
+                });
+            }
+
             apiSolicitud.setCantidadesIniciales(cantidades);
             apiSolicitud.setNombreEntidades(nombres);
 
@@ -58,17 +79,25 @@ public class ContactoSim implements InterfazContactoSim {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * Descarga la respuesta del servidor para un ticket específico y la parsea desde formato CSV.
+     * La primera línea define el ancho del tablero y las siguientes definen puntos
+     * bajo el formato: {@code tiempo, y, x, color}.
+     * * @param ticket  Token o identificador único de la simulación.
+     * @param usuario Nombre del usuario que solicita la descarga.
+     * @return Un objeto {@link DatosSimulation} poblado con los puntos, dimensiones y tiempos máximos.
+     */
     @Override
-    public DatosSimulation descargarDatos(int ticket) {
+    public DatosSimulation descargarDatos(int ticket,String usuario) {
         DatosSimulation ds = new DatosSimulation();
         ds.setPuntos(new HashMap<>());
         ds.setAnchoTablero(10);
         ds.setMaxSegundos(0);
 
         try {
-            utilidades.model.ResultsResponse response = resultadosApi.resultadosPost("usuario", ticket);
+            utilidades.model.ResultsResponse response = resultadosApi.resultadosPost(usuario, ticket);
             Object dataObj = response.getData();
-
             if (dataObj instanceof String && !((String) dataObj).isEmpty()) {
                 String rawData = ((String) dataObj).replace("\r", "");
                 String[] lineas = rawData.trim().split("\n");
@@ -110,6 +139,11 @@ public class ContactoSim implements InterfazContactoSim {
         return ds;
     }
 
+    /**
+     * {@inheritDoc}
+     * Obtiene el listado de entidades predefinidas que pueden ser monitorizadas en el sistema.
+     * * @return Lista de objetos {@link Entidad} disponibles (Viviendas, Coches, Temperatura, Combustible).
+     */
     @Override
     public List<Entidad> getEntities() {
         List<Entidad> entidades = new ArrayList<>();
@@ -126,6 +160,12 @@ public class ContactoSim implements InterfazContactoSim {
         return entidades;
     }
 
+    /**
+     * {@inheritDoc}
+     * Valida si un identificador numérico corresponde a uno de los tipos de entidades permitidas.
+     * * @param id Identificador numérico a validar.
+     * @return {@code true} si el ID está en el rango permitido (1 a 4), {@code false} en caso contrario.
+     */
     @Override
     public boolean isValidEntityId(int id) {
         return id >= 1 && id <= 4;
