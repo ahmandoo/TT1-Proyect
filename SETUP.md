@@ -1,6 +1,6 @@
 # Proyecto TT1 - Simulador de Pandemias
 
-Este proyecto es una aplicación web basada en Spring Boot que simula la propagación de una enfermedad, para la asignatura de TT1.
+Este proyecto es una aplicación web basada en Spring Boot que simula la propagación de una enfermedad, para la asignatura de TT1. 
 
 La simulación incluye persistencia de datos, gestión de usuarios y una interfaz interactiva dinámica (Grid) para visualizar el avance de las generaciones del virus sobre diferentes entidades poblacionales (Sanos, Infectados, Recuperados, Vacunados y Fallecidos).
 Incluye también logout y filtro de autenticación para que los usuarios no identificados no puedan realizar simulaciones. 
