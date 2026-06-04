@@ -19,10 +19,12 @@ public class UsuarioRepositoryTest {
     @Test
     public void testGuardarYBuscarUsuario() {
         UsuarioEntity nuevoUsuario = new UsuarioEntity("testUser");
+        nuevoUsuario.setEmail("nuevoUsuario@gmail.com");
         usuarioRepository.save(nuevoUsuario);
         Optional<UsuarioEntity> usuarioEncontrado = usuarioRepository.findByUsername("testUser");
         assertTrue(usuarioEncontrado.isPresent(), "El usuario debería existir en la base de datos");
         assertEquals("testUser", usuarioEncontrado.get().getUsername(), "El nombre de usuario debe coincidir");
+        assertEquals("nuevoUsuario@gmail.com", usuarioEncontrado.get().getEmail(), "El email debe coincidir");
         assertNotNull(usuarioEncontrado.get().getId(), "JPA debería haber generado un ID autoincremental");
     }
 

@@ -27,6 +27,7 @@ public class SolicitudRepositoryTest {
     @BeforeEach
     void setUp() {
         testUser = new UsuarioEntity("simuUser");
+        testUser.setEmail("testUser@gmail.com");
         usuarioRepository.save(testUser);
     }
 
